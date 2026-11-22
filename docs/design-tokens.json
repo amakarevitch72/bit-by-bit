@@ -1,0 +1,61 @@
+{
+  "color": {
+    "bg": "#0E1116",
+    "surface": "#171B22",
+    "surfaceSunken": "#12161C",
+    "displayBg": "#0A0D10",
+    "border": "#2A3140",
+    "borderSubtle": "#232A36",
+    "text": "#E8ECF2",
+    "textSecondary": "#C5CCD6",
+    "textMuted": "#9AA4B2",
+    "textLocked": "#8A94A3",
+    "signalHigh": "#4ADE80",
+    "signalHighBg": "#12301F",
+    "signalHighGlow": "rgba(74,222,128,0.25)",
+    "onSignalHigh": "#0B2414",
+    "signalLow": "#3A4352",
+    "pinOutline": "#5B6575",
+    "ledOff": "#232A36",
+    "segmentOff": "#18211B",
+    "accent": "#F5B544",
+    "accentBg": "#1D1A12",
+    "accentBorder": "#4A3B17",
+    "onAccent": "#1A1406",
+    "error": "#FF8A7A",
+    "errorText": "#FFB4A8",
+    "errorBg": "#2A1715",
+    "errorBorder": "#6B2C25"
+  },
+  "meaning": {
+    "signalHigh": "wire/LED = 1, correct answer, finished level, connected link",
+    "signalLow": "wire = 0",
+    "accent": "current level, selected chip, socket ready to receive, primary next action, unconnected link",
+    "error": "wrong output / failed test row",
+    "dashed": "empty socket, unconnected link, unpowered wire (always pair with color)"
+  },
+  "font": {
+    "display": "Space Grotesk, 700",
+    "body": "Inter, 400/500/600",
+    "mono": "JetBrains Mono, 500/700"
+  },
+  "type": {
+    "h1": { "font": "display", "size": 28, "lineHeight": 1.15 },
+    "h2": { "font": "display", "size": 22 },
+    "title": { "font": "body", "size": 16, "weight": 600 },
+    "body": { "font": "body", "size": 14, "lineHeight": 1.45 },
+    "caption": { "font": "body", "size": 12 },
+    "eyebrow": { "font": "mono", "size": 12, "weight": 700, "letterSpacing": "0.1em", "case": "upper" },
+    "bit": { "font": "mono", "size": 18, "weight": 700 }
+  },
+  "radius": { "chip": 6, "socket": 10, "button": 12, "primaryButton": 14, "card": 14, "board": 18, "pill": 999 },
+  "size": {
+    "screen": [390, 844],
+    "minTouch": 44,
+    "primaryButtonHeight": 54,
+    "inputToggleHeight": 60,
+    "wireStroke": 3,
+    "boardGridDot": 16
+  },
+  "spacing": { "screenPadding": 16, "sectionGap": 10, "cardPadding": 12 }
+}

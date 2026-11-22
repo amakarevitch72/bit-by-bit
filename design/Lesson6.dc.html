@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson: half adder</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+a{color:#F5B544}a:hover{color:#FFD08A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column">
+
+  <header style="padding: 16px 12px 8px; display: flex; align-items: center; gap: 8px">
+    <a href="Main.dc.html" aria-label="Back to journey" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #C5CCD6">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">LEVEL 6 · LESSON</span>
+      <span style="font-size: 16px; font-weight: 600">Half adder</span>
+    </div>
+  </header>
+
+  <main style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 20px 0; display: flex; flex-direction: column; gap: 14px">
+    <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 28px; line-height: 1.15; font-weight: 700">Making bits add up</h1>
+
+    <div style="padding: 14px 16px; border-radius: 16px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 10px">
+      <span style="font-size: 15px; font-weight: 600">Adding in binary</span>
+      <span style="font-size: 14px; line-height: 1.45; color: #C5CCD6">There's no digit "2", so 1 + 1 carries to the next column.</span>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: center">
+        <span style="padding: 6px 0; color: #9AA4B2">A + B</span>
+        <span style="padding: 6px 0; color: #9AA4B2">=</span>
+        <span style="padding: 6px 0; color: #9AA4B2">C</span>
+        <span style="padding: 6px 0; color: #9AA4B2">S</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">0 + 0</span><span style="padding: 6px 0">0</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">0</span><span style="padding: 6px 0; border-radius: 6px; background: #12161C">0</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">0 + 1</span><span style="padding: 6px 0">1</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">0</span><span style="padding: 6px 0; border-radius: 6px; background: #12301F; color: #4ADE80">1</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">1 + 0</span><span style="padding: 6px 0">1</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">0</span><span style="padding: 6px 0; border-radius: 6px; background: #12301F; color: #4ADE80">1</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">1 + 1</span><span style="padding: 6px 0; color: #F5B544; font-weight: 700">10</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12301F; color: #4ADE80">1</span><span style="padding: 6px 0; border-radius: 6px; background: #12161C">0</span>
+      </div>
+    </div>
+
+    <div style="padding: 14px 16px; border-radius: 16px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 15px; font-weight: 600">Two outputs, two chips</span>
+      <span style="font-size: 14px; line-height: 1.45; color: #C5CCD6">S is the sum bit (the right digit), C the carry (the left digit). Each one is a gate you already built. From now on you build with chips: each counts as one block.</span>
+    </div>
+
+    <div style="padding: 14px 16px; border-radius: 14px; background: #1D1A12; border: 1px solid #4A3B17">
+      <span style="font-size: 14px; line-height: 1.45; color: #E8ECF2"><strong>Your goal:</strong> find which chip makes S and which makes C, so A + B comes out right for all four inputs.</span>
+    </div>
+  </main>
+
+  <footer style="padding: 12px 20px 24px; display: flex; flex-direction: column; gap: 8px">
+    <a href="HalfAdder.dc.html" style="height: 54px; border-radius: 14px; background: #F5B544; color: #1A1406; font-weight: 600; font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">Start · Normal
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+    <a href="WorkbenchHard6.dc.html" style="height: 54px; box-sizing: border-box; border-radius: 14px; border: 1px solid #2A3140; color: #E8ECF2; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; text-decoration: none">Hard mode · build it yourself</a>
+    <span style="text-align: center; font-size: 13px; color: #9AA4B2">Either mode unlocks the HA chip. Hard adds a ★ on the map.</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

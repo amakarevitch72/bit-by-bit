@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workbench: SR latch</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+a{color:#F5B544}a:hover{color:#FFD08A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column">
+
+  <header style="padding: 16px 12px 4px; display: flex; align-items: center; gap: 8px">
+    <a href="Main.dc.html" aria-label="Back to journey" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #C5CCD6">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">LEVEL 15 · CHAPTER 4: MEMORY</span>
+      <span style="font-size: 16px; font-weight: 600">Build an SR latch</span>
+    </div>
+    <button aria-label="Hint" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #2A3140; background: #171B22; color: #F5B544; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"></path></svg>
+    </button>
+  </header>
+
+  <main style="flex: 1; padding: 2px 16px 0; display: flex; flex-direction: column; gap: 10px">
+    <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #C5CCD6">Until now, outputs vanished when inputs changed. Loop each gate's output back into the other and the circuit <strong style="color: #E8ECF2">remembers</strong>.</p>
+
+    <!-- Board -->
+    <div style="position: relative; height: 262px; border-radius: 18px; background-color: #12161C; border: 1px solid #232A36; background-image: radial-gradient(#232A36 1px, transparent 1px); background-size: 16px 16px; overflow: hidden">
+      <svg width="358" height="240" viewBox="0 0 358 240" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+        <!-- R -->
+        <text x="10" y="51" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="15" font-weight="700">R</text>
+        <circle cx="34" cy="46" r="7" fill="{{inR}}"></circle>
+        <line x1="41" y1="46" x2="150" y2="46" stroke="{{inR}}" stroke-width="3"></line>
+        <!-- S -->
+        <text x="10" y="199" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="15" font-weight="700">S</text>
+        <circle cx="34" cy="194" r="7" fill="{{inS}}"></circle>
+        <line x1="41" y1="194" x2="150" y2="194" stroke="{{inS}}" stroke-width="3"></line>
+        <!-- Q out -->
+        <line x1="220" y1="60" x2="306" y2="60" stroke="{{wQ}}" stroke-width="3" stroke-dasharray="{{dQ}}"></line>
+        <circle cx="320" cy="60" r="15" fill="{{glowQ}}"></circle>
+        <circle cx="320" cy="60" r="9" fill="{{ledQ}}" stroke="#5B6575" stroke-width="2"></circle>
+        <text x="314" y="94" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700">Q</text>
+        <!-- Qbar out -->
+        <line x1="220" y1="180" x2="306" y2="180" stroke="{{wQn}}" stroke-width="3" stroke-dasharray="{{dQn}}"></line>
+        <circle cx="320" cy="180" r="15" fill="{{glowQn}}"></circle>
+        <circle cx="320" cy="180" r="9" fill="{{ledQn}}" stroke="#5B6575" stroke-width="2"></circle>
+        <text x="314" y="214" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700">Q̄</text>
+        <!-- Loop 1: Q back into bottom gate -->
+        <polyline points="262,60 262,104 126,128 126,166 150,166" fill="none" stroke="{{wL1}}" stroke-width="3" stroke-dasharray="{{dL1}}" stroke-linejoin="round"></polyline>
+        <circle cx="262" cy="60" r="4" fill="{{wQ}}"></circle>
+        <!-- Loop 2: Qbar back into top gate -->
+        <polyline points="262,180 262,140 108,112 108,74 150,74" fill="none" stroke="{{wL2}}" stroke-width="3" stroke-dasharray="{{dL2}}" stroke-linejoin="round"></polyline>
+        <circle cx="262" cy="180" r="4" fill="{{wQn}}"></circle>
+      </svg>
+      <button onClick="{{placeTop}}" aria-label="{{labelTop}}" style="{{sockTop}}">{{symTop}}</button>
+      <button onClick="{{placeBot}}" aria-label="{{labelBot}}" style="{{sockBot}}">{{symBot}}</button>
+      <button onClick="{{toggleL1}}" aria-pressed="{{l1}}" aria-label="{{labelL1}}" style="{{btnL1}}">loop</button>
+      <button onClick="{{toggleL2}}" aria-pressed="{{l2}}" aria-label="{{labelL2}}" style="{{btnL2}}">loop</button>
+      <sc-if value="{{warn}}" hint-placeholder-val="{{ false }}">
+        <span style="position: absolute; left: 12px; bottom: 8px; right: 12px; font-size: 12px; color: #FFB4A8">{{warnText}}</span>
+      </sc-if>
+    </div>
+
+    <!-- Chip tray -->
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; color: #9AA4B2">{{trayHint}}</span>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{tray}}" as="t" hint-placeholder-count="3">
+          <button onClick="{{t.pick}}" aria-pressed="{{t.selected}}" style="{{t.style}}">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700">{{t.sym}}</span>
+            <span style="font-size: 11px; color: #9AA4B2">{{t.name}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- Pulse buttons -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr 0.7fr; gap: 8px">
+      <button onClick="{{pulseS}}" style="{{btnS}}">
+        <span style="font-size: 15px; font-weight: 700">Set</span>
+        <span style="font-size: 11px; color: #9AA4B2">pulse S</span>
+      </button>
+      <button onClick="{{pulseR}}" style="{{btnR}}">
+        <span style="font-size: 15px; font-weight: 700">Reset</span>
+        <span style="font-size: 11px; color: #9AA4B2">pulse R</span>
+      </button>
+      <button onClick="{{pulseBoth}}" style="{{btnBoth}}">
+        <span style="font-size: 13px; font-weight: 700">S + R</span>
+        <span style="font-size: 11px; color: #9AA4B2">both</span>
+      </button>
+    </div>
+
+    <!-- Waveform -->
+    <div style="padding: 10px 12px; border-radius: 14px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 6px">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+        <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+          <span style="font-size: 13px; font-weight: 600">{{waveTitle}}</span>
+          <span style="{{waveSubStyle}}">{{waveSub}}</span>
+        </div>
+        <button onClick="{{runTest}}" disabled="{{cantRun}}" style="{{runStyle}}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5v14l12-7z"></path></svg>
+          Test
+        </button>
+      </div>
+      <sc-for list="{{traces}}" as="tr" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span style="width: 44px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C5CCD6">{{tr.name}}</span>
+          <div style="display: flex; height: 20px; flex: 1">
+            <sc-for list="{{tr.cells}}" as="c" hint-placeholder-count="14">
+              <div style="{{c.style}}"></div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </main>
+
+  <footer style="padding: 10px 16px 22px">
+    <sc-if value="{{allPass}}" hint-placeholder-val="{{ false }}">
+      <a href="Main.dc.html" style="height: 54px; border-radius: 14px; background: #4ADE80; color: #0B2414; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>
+        It remembers! Unlock the LATCH chip
+      </a>
+    </sc-if>
+    <sc-if value="{{notPass}}" hint-placeholder-val="{{ true }}">
+      <button disabled style="{{waitStyle}}">{{waitText}}</button>
+    </sc-if>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      top: 'NOR', bot: null, l1: true, l2: false, sel: null,
+      s: false, r: false, q: false, qn: true, osc: false,
+      hist: [], busy: false, test: null
+    };
+    this.timer = null;
+  }
+  componentWillUnmount() { if (this.timer) clearTimeout(this.timer); }
+  gate(g, x, y) {
+    if (g === 'NOR') return !(x || y);
+    if (g === 'OR') return x || y;
+    if (g === 'NAND') return !(x && y);
+    return null;
+  }
+  settle(cfg, s, r, q, qn) {
+    for (var i = 0; i < 8; i++) {
+      var fbTop = cfg.l2 ? qn : false, fbBot = cfg.l1 ? q : false;
+      var nq = this.gate(cfg.top, r, fbTop), nqn = this.gate(cfg.bot, fbBot, s);
+      if (nq === null || nqn === null) return { q: nq, qn: nqn, osc: false };
+      if (nq === q && nqn === qn) return { q: q, qn: qn, osc: false };
+      q = nq; qn = nqn;
+    }
+    return { q: q, qn: qn, osc: true };
+  }
+  step(s, r) {
+    var st = this.state;
+    var res = this.settle(st, s, r, !!st.q, !!st.qn);
+    var hist = st.hist.concat([{ s: s, r: r, q: res.q }]);
+    if (hist.length > 14) hist = hist.slice(hist.length - 14);
+    this.setState({ s: s, r: r, q: res.q, qn: res.qn, osc: res.osc, hist: hist });
+  }
+  pulse(s, r) {
+    var self = this;
+    if (this.state.busy) return;
+    this.setState({ busy: true }, function () {
+      self.step(s, r);
+      self.timer = setTimeout(function () {
+        self.step(false, false);
+        self.setState({ busy: false });
+        self.timer = null;
+      }, 450);
+    });
+  }
+  place(slot) {
+    var st = this.state, patch = { test: null };
+    if (st.sel) { patch[slot] = st.sel; patch.sel = null; }
+    else if (st[slot]) { patch[slot] = null; }
+    else return;
+    this.setState(patch, this.resettle.bind(this));
+  }
+  toggleLink(k) {
+    var patch = { test: null };
+    patch[k] = !this.state[k];
+    this.setState(patch, this.resettle.bind(this));
+  }
+  resettle() {
+    var st = this.state;
+    var res = this.settle(st, st.s, st.r, !!st.q, !!st.qn);
+    this.setState({ q: res.q, qn: res.qn, osc: res.osc });
+  }
+  runTest() {
+    var st = this.state;
+    if (!st.top || !st.bot) return;
+    var seq = [[0, 1, 0], [0, 0, 0], [1, 0, 1], [0, 0, 1], [0, 0, 1], [0, 1, 0], [0, 0, 0], [0, 0, 0], [1, 0, 1], [0, 0, 1]];
+    var q = false, qn = false, rows = [], pass = 0, checks = 0;
+    for (var i = 0; i < seq.length; i++) {
+      var s = !!seq[i][0], r = !!seq[i][1];
+      var res = this.settle(st, s, r, q, qn);
+      q = !!res.q; qn = !!res.qn;
+      var want = seq[i][2];
+      var ok = want === null ? null : (q === !!want);
+      if (want !== null) { checks++; if (ok) pass++; }
+      rows.push({ s: s, r: r, q: q, want: want, ok: ok });
+    }
+    this.setState({ test: { rows: rows, pass: pass, checks: checks } });
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var HIGH = '#4ADE80', LOW = '#3A4352';
+    var SYM = { NOR: '≥1○', OR: '≥1', NAND: '&○' };
+    var ready = !!(st.top && st.bot);
+    var q = ready ? st.q : null, qn = ready ? st.qn : null;
+    if (!st.top) q = null;
+    if (!st.bot) qn = null;
+    function w(v) { return v ? HIGH : LOW; }
+    function d(v) { return v === null ? '5 5' : 'none'; }
+    function sock(top, chip) {
+      var base = 'position: absolute; left: 150px; top: ' + top + 'px; width: 70px; height: 60px; box-sizing: border-box; border-radius: 10px; font-family: JetBrains Mono, monospace; font-size: 18px; font-weight: 700; cursor: pointer; padding: 0; ';
+      if (chip) return base + 'background: #171B22; border: 2px solid #4ADE80; color: #E8ECF2;';
+      if (st.sel) return base + 'background: #1D1A12; border: 2px dashed #F5B544; color: #F5B544;';
+      return base + 'background: #12161C; border: 2px dashed #5B6575; color: #8A94A3;';
+    }
+    function linkBtn(top, on) {
+      return 'position: absolute; left: 240px; top: ' + top + 'px; width: 44px; height: 30px; box-sizing: border-box; border-radius: 8px; font-family: JetBrains Mono, monospace; font-size: 11px; font-weight: 700; cursor: pointer; padding: 0; ' +
+        (on ? 'background: #12301F; border: 2px solid #4ADE80; color: #4ADE80;' : 'background: #1D1A12; border: 2px dashed #F5B544; color: #F5B544;');
+    }
+    function pulseBtn(active, tone) {
+      var base = 'height: 56px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; font-family: Inter, sans-serif; color: #E8ECF2; ';
+      if (active) return base + 'background: #12301F; border: 2px solid #4ADE80;';
+      return base + (tone === 'warn' ? 'background: #171B22; border: 2px dashed #6B2C25;' : 'background: #171B22; border: 2px solid #2A3140;');
+    }
+
+    var tray = ['NOR', 'OR', 'NAND'].map(function (g) {
+      var selected = st.sel === g;
+      return {
+        sym: SYM[g], name: g, selected: selected,
+        pick: function () { self.setState({ sel: selected ? null : g }); },
+        style: 'height: 54px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; font-family: Inter, sans-serif; color: #E8ECF2; ' +
+          (selected ? 'background: #1D1A12; border: 2px solid #F5B544;' : 'background: #171B22; border: 2px solid #2A3140;')
+      };
+    });
+
+    function cells(values, colorFn) {
+      var out = [];
+      for (var i = 0; i < 14; i++) {
+        var v = values[i];
+        var prev = i > 0 ? values[i - 1] : undefined;
+        var base = 'flex: 1; box-sizing: border-box; height: 20px; ';
+        if (v === undefined) { out.push({ style: base + 'border-bottom: 1px dashed #2A3140;' }); continue; }
+        var col = colorFn ? colorFn(i) : HIGH;
+        var edge = (prev !== undefined && prev !== v && v !== null && prev !== null) ? ' border-left: 2px solid ' + col + ';' : '';
+        if (v === null) out.push({ style: base + 'border-bottom: 3px dotted #5B6575;' });
+        else if (v) out.push({ style: base + 'border-top: 3px solid ' + col + '; background: rgba(74,222,128,0.08);' + edge });
+        else out.push({ style: base + 'border-bottom: 3px solid ' + (colorFn ? col : '#5B6575') + ';' + edge });
+      }
+      return out;
+    }
+
+    var t = st.test, traces, waveTitle, waveSub, waveSubStyle;
+    var allPass = !!t && t.pass === t.checks;
+    if (t) {
+      var rows = t.rows;
+      traces = [
+        { name: 'S', cells: cells(rows.map(function (x) { return x.s; })) },
+        { name: 'R', cells: cells(rows.map(function (x) { return x.r; })) },
+        { name: 'Q want', cells: cells(rows.map(function (x) { return !!x.want; }), function () { return '#9AA4B2'; }) },
+        { name: 'Q got', cells: cells(rows.map(function (x) { return x.q; }), function (i) { return rows[i].ok === false ? '#FF8A7A' : HIGH; }) }
+      ];
+      waveTitle = 'Test: ' + t.pass + '/' + t.checks + ' checks pass';
+      waveSub = allPass ? 'Q holds its value after every pulse ends.' : 'Red = Q forgot or got it wrong. Check the loops.';
+      waveSubStyle = 'font-size: 12px; color: ' + (allPass ? '#4ADE80' : '#FFB4A8');
+    } else {
+      var h = st.hist;
+      traces = [
+        { name: 'S', cells: cells(h.map(function (x) { return x.s; })) },
+        { name: 'R', cells: cells(h.map(function (x) { return x.r; })) },
+        { name: 'Q', cells: cells(h.map(function (x) { return x.q; })) }
+      ];
+      waveTitle = 'Live timeline';
+      waveSub = 'Pulse Set or Reset and watch Q after the pulse ends.';
+      waveSubStyle = 'font-size: 12px; color: #9AA4B2';
+    }
+
+    var noLoops = ready && !st.l1 && !st.l2;
+    var warnText = st.osc ? 'Q flickers: S and R let go at the same moment — a race. Real latches forbid S + R.'
+      : (ready && st.s && st.r && st.top === 'NOR' && st.bot === 'NOR') ? 'S + R: both outputs 0. Q and Q̄ disagree with their names — avoid this.'
+      : noLoops ? 'No loops: each gate only sees its input, so Q forgets the moment you let go.' : '';
+
+    return {
+      inR: w(st.r), inS: w(st.s),
+      wQ: w(q), dQ: d(q), wQn: w(qn), dQn: d(qn),
+      ledQ: q ? HIGH : '#232A36', ledQn: qn ? HIGH : '#232A36',
+      glowQ: q ? 'rgba(74,222,128,0.25)' : 'transparent', glowQn: qn ? 'rgba(74,222,128,0.25)' : 'transparent',
+      wL1: st.l1 ? w(q) : '#2A3140', dL1: st.l1 ? 'none' : '4 6',
+      wL2: st.l2 ? w(qn) : '#2A3140', dL2: st.l2 ? 'none' : '4 6',
+      symTop: st.top ? SYM[st.top] : '+', symBot: st.bot ? SYM[st.bot] : '+',
+      labelTop: st.top ? 'Top gate: ' + st.top + '. Tap to remove' : 'Empty top gate socket',
+      labelBot: st.bot ? 'Bottom gate: ' + st.bot + '. Tap to remove' : 'Empty bottom gate socket',
+      sockTop: sock(30, st.top), sockBot: sock(150, st.bot),
+      placeTop: function () { self.place('top'); }, placeBot: function () { self.place('bot'); },
+      l1: !!st.l1, l2: !!st.l2,
+      labelL1: 'Loop from Q into the bottom gate: ' + (st.l1 ? 'connected' : 'not connected'),
+      labelL2: 'Loop from Q-bar into the top gate: ' + (st.l2 ? 'connected' : 'not connected'),
+      btnL1: linkBtn(68, st.l1), btnL2: linkBtn(144, st.l2),
+      toggleL1: function () { self.toggleLink('l1'); }, toggleL2: function () { self.toggleLink('l2'); },
+      warn: !!warnText, warnText: warnText,
+      tray: tray,
+      trayHint: st.sel ? 'NOW TAP A GATE SOCKET' : 'YOUR CHIPS — TAP ONE, THEN A SOCKET',
+      btnS: pulseBtn(st.s && !st.r), btnR: pulseBtn(st.r && !st.s), btnBoth: pulseBtn(st.s && st.r, 'warn'),
+      pulseS: function () { self.pulse(true, false); },
+      pulseR: function () { self.pulse(false, true); },
+      pulseBoth: function () { self.pulse(true, true); },
+      traces: traces, waveTitle: waveTitle, waveSub: waveSub, waveSubStyle: waveSubStyle,
+      runTest: function () { self.runTest(); }, cantRun: !ready,
+      runStyle: 'height: 44px; padding: 0 14px; border-radius: 10px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; ' +
+        (ready ? 'background: #F5B544; color: #1A1406; border: none; cursor: pointer;' : 'background: #1F2530; color: #8A94A3; border: 1px solid #2A3140;'),
+      allPass: allPass, notPass: !allPass,
+      waitText: !ready ? 'Place both gates to power the latch' : !t ? 'Run the test to finish' : 'Fix the loops and test again',
+      waitStyle: 'width: 100%; height: 54px; border-radius: 14px; font-family: Inter, sans-serif; font-weight: 600; font-size: 15px; ' +
+        (t && !allPass ? 'background: #2A1715; border: 1px solid #6B2C25; color: #FFB4A8;' : 'background: #1F2530; border: 1px solid #2A3140; color: #B4BCC8;')
+    };
+  }
+}
+</script>
+</body>
+</html>

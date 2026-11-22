@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workbench: two transistors</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+a{color:#F5B544}a:hover{color:#FFD08A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column">
+
+  <header style="padding: 16px 12px 4px; display: flex; align-items: center; gap: 8px">
+    <a href="{{backHref}}" aria-label="Back to lesson" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #C5CCD6">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">{{eyebrow}}</span>
+      <span style="font-size: 16px; font-weight: 600">{{title}}</span>
+    </div>
+    <button aria-label="Hint" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #2A3140; background: #171B22; color: #F5B544; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"></path></svg>
+    </button>
+  </header>
+
+  <main style="flex: 1; min-height: 0; overflow-y: auto; padding: 2px 16px 0; display: flex; flex-direction: column; gap: 10px">
+    <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #C5CCD6">{{goal}}</p>
+
+    <!-- Board: one drawing per wiring -->
+    <div style="height: 220px; flex-shrink: 0; border-radius: 18px; background-color: #12161C; border: 1px solid #232A36; background-image: radial-gradient(#232A36 1px, transparent 1px); background-size: 16px 16px; display: flex; align-items: center; justify-content: center; overflow: hidden">
+      <sc-if value="{{isSeries}}" hint-placeholder-val="{{ true }}">
+        <svg width="265" height="220" viewBox="0 0 350 290" role="img" aria-label="{{boardLabel}}">
+          <line x1="200" y1="14" x2="236" y2="14" stroke="#4ADE80" stroke-width="3"></line>
+          <line x1="230" y1="14" x2="230" y2="66" stroke="#4ADE80" stroke-width="3"></line>
+          <text x="244" y="20" fill="#9AA4B2" font-family="JetBrains Mono, monospace" font-size="13">+5V</text>
+          <!-- Q1 (base A) -->
+          <line x1="70" y1="90" x2="210" y2="90" stroke="{{cA}}" stroke-width="3"></line>
+          <circle cx="56" cy="90" r="12" fill="{{cA}}"></circle>
+          <text x="16" y="96" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="18" font-weight="700">A</text>
+          <circle cx="220" cy="90" r="26" fill="#171B22" stroke="#5B6575" stroke-width="2"></circle>
+          <line x1="210" y1="74" x2="210" y2="106" stroke="#E8ECF2" stroke-width="3"></line>
+          <line x1="210" y1="82" x2="230" y2="66" stroke="#4ADE80" stroke-width="2.5"></line>
+          <line x1="210" y1="98" x2="230" y2="114" stroke="{{cQ1}}" stroke-width="2.5"></line>
+          <text x="262" y="95" fill="#9AA4B2" font-family="JetBrains Mono, monospace" font-size="12">Q1</text>
+          <line x1="230" y1="114" x2="230" y2="166" stroke="{{cQ1}}" stroke-width="3"></line>
+          <!-- Q2 (base B) -->
+          <line x1="70" y1="190" x2="210" y2="190" stroke="{{cB}}" stroke-width="3"></line>
+          <circle cx="56" cy="190" r="12" fill="{{cB}}"></circle>
+          <text x="16" y="196" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="18" font-weight="700">B</text>
+          <circle cx="220" cy="190" r="26" fill="#171B22" stroke="#5B6575" stroke-width="2"></circle>
+          <line x1="210" y1="174" x2="210" y2="206" stroke="#E8ECF2" stroke-width="3"></line>
+          <line x1="210" y1="182" x2="230" y2="166" stroke="{{cQ1}}" stroke-width="2.5"></line>
+          <line x1="210" y1="198" x2="230" y2="214" stroke="{{cOut}}" stroke-width="2.5"></line>
+          <text x="262" y="195" fill="#9AA4B2" font-family="JetBrains Mono, monospace" font-size="12">Q2</text>
+          <!-- LED + ground -->
+          <line x1="230" y1="214" x2="230" y2="240" stroke="{{cOut}}" stroke-width="3"></line>
+          <circle cx="230" cy="252" r="18" fill="{{ledGlow}}"></circle>
+          <circle cx="230" cy="252" r="12" fill="{{led}}" stroke="#5B6575" stroke-width="2"></circle>
+          <text x="252" y="258" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="15" font-weight="700">OUT</text>
+          <line x1="230" y1="266" x2="230" y2="280" stroke="#3A4352" stroke-width="3"></line>
+          <line x1="214" y1="280" x2="246" y2="280" stroke="#5B6575" stroke-width="3"></line>
+          <line x1="220" y1="286" x2="240" y2="286" stroke="#5B6575" stroke-width="3"></line>
+        </svg>
+      </sc-if>
+      <sc-if value="{{isSideBySide}}" hint-placeholder-val="{{ false }}">
+        <svg width="265" height="220" viewBox="0 0 350 290" role="img" aria-label="{{boardLabel}}">
+          <!-- +5V rail to both collectors -->
+          <line x1="150" y1="24" x2="250" y2="24" stroke="{{cRail}}" stroke-width="3" stroke-dasharray="{{dRail}}"></line>
+          <line x1="150" y1="24" x2="150" y2="86" stroke="{{cRail}}" stroke-width="3" stroke-dasharray="{{dRail}}"></line>
+          <line x1="250" y1="24" x2="250" y2="86" stroke="{{cRail}}" stroke-width="3" stroke-dasharray="{{dRail}}"></line>
+          <text x="258" y="30" fill="#9AA4B2" font-family="JetBrains Mono, monospace" font-size="13">+5V</text>
+          <!-- Q1, base A from the left -->
+          <line x1="70" y1="110" x2="130" y2="110" stroke="{{cA}}" stroke-width="3"></line>
+          <circle cx="56" cy="110" r="12" fill="{{cA}}"></circle>
+          <text x="16" y="116" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="18" font-weight="700">A</text>
+          <circle cx="140" cy="110" r="26" fill="#171B22" stroke="#5B6575" stroke-width="2"></circle>
+          <line x1="130" y1="94" x2="130" y2="126" stroke="#E8ECF2" stroke-width="3"></line>
+          <line x1="130" y1="102" x2="150" y2="86" stroke="{{cRail}}" stroke-width="2.5" stroke-dasharray="{{dRail}}"></line>
+          <line x1="130" y1="118" x2="150" y2="134" stroke="{{cQ1}}" stroke-width="2.5" stroke-dasharray="{{dQ1}}"></line>
+          <text x="158" y="160" fill="#9AA4B2" font-family="JetBrains Mono, monospace" font-size="12">Q1</text>
+          <!-- Q2, base B from the right -->
+          <line x1="270" y1="110" x2="312" y2="110" stroke="{{cB}}" stroke-width="3"></line>
+          <circle cx="326" cy="110" r="12" fill="{{cB}}"></circle>
+          <text x="318" y="86" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="18" font-weight="700">B</text>
+          <circle cx="260" cy="110" r="26" fill="#171B22" stroke="#5B6575" stroke-width="2"></circle>
+          <line x1="270" y1="94" x2="270" y2="126" stroke="#E8ECF2" stroke-width="3"></line>
+          <line x1="270" y1="102" x2="250" y2="86" stroke="{{cRail}}" stroke-width="2.5" stroke-dasharray="{{dRail}}"></line>
+          <line x1="270" y1="118" x2="250" y2="134" stroke="{{cQ2}}" stroke-width="2.5" stroke-dasharray="{{dQ2}}"></line>
+          <text x="258" y="160" fill="#9AA4B2" font-family="JetBrains Mono, monospace" font-size="12">Q2</text>
+          <!-- both emitters join, then the LED -->
+          <line x1="150" y1="134" x2="150" y2="180" stroke="{{cQ1}}" stroke-width="3" stroke-dasharray="{{dQ1}}"></line>
+          <line x1="250" y1="134" x2="250" y2="180" stroke="{{cQ2}}" stroke-width="3" stroke-dasharray="{{dQ2}}"></line>
+          <line x1="150" y1="180" x2="250" y2="180" stroke="{{cOut}}" stroke-width="3" stroke-dasharray="{{dOut}}"></line>
+          <line x1="200" y1="180" x2="200" y2="214" stroke="{{cOut}}" stroke-width="3" stroke-dasharray="{{dOut}}"></line>
+          <g opacity="{{ledOpacity}}">
+            <circle cx="200" cy="228" r="18" fill="{{ledGlow}}"></circle>
+            <circle cx="200" cy="228" r="12" fill="{{led}}" stroke="#5B6575" stroke-width="2"></circle>
+            <text x="222" y="234" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="15" font-weight="700">OUT</text>
+            <line x1="200" y1="242" x2="200" y2="256" stroke="#3A4352" stroke-width="3"></line>
+            <line x1="184" y1="256" x2="216" y2="256" stroke="#5B6575" stroke-width="3"></line>
+            <line x1="190" y1="262" x2="210" y2="262" stroke="#5B6575" stroke-width="3"></line>
+          </g>
+          <text x="200" y="236" text-anchor="middle" fill="#F5B544" font-family="Inter, sans-serif" font-size="15">{{boardHint}}</text>
+        </svg>
+      </sc-if>
+    </div>
+
+    <!-- Wiring: Stacked or Side by side -->
+    <div role="radiogroup" aria-label="Wiring" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <sc-for list="{{wirings}}" as="w" hint-placeholder-count="2">
+        <button role="radio" aria-checked="{{w.on}}" disabled="{{w.disabled}}" onClick="{{w.pick}}" style="{{w.style}}">
+          <span style="{{w.titleStyle}}">{{w.title}}</span>
+          <span style="font-size: 12px; color: #9AA4B2">{{w.sub}}</span>
+        </button>
+      </sc-for>
+    </div>
+
+    <!-- Inputs + output -->
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+      <button onClick="{{toggleA}}" aria-pressed="{{a}}" style="{{btnA}}">
+        <span style="font-size: 12px; color: #9AA4B2">Input A</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700">{{aVal}}</span>
+      </button>
+      <button onClick="{{toggleB}}" aria-pressed="{{b}}" style="{{btnB}}">
+        <span style="font-size: 12px; color: #9AA4B2">Input B</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700">{{bVal}}</span>
+      </button>
+      <div role="status" style="{{outBox}}">
+        <span style="{{outLabelStyle}}">Output</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700">{{outVal}}</span>
+      </div>
+    </div>
+
+    <!-- Truth table: want / got -->
+    <div style="padding: 12px; border-radius: 14px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; justify-content: space-between; font-size: 13px">
+        <span style="font-weight: 600">Truth table</span>
+        <span style="color: #9AA4B2">{{passCount}}/4 correct</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+          <div style="{{r.cellStyle}}">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700">{{r.ab}}</span>
+            <span style="font-size: 12px; color: #9AA4B2">want {{r.want}}</span>
+            <span style="{{r.gotStyle}}">{{r.got}}</span>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{showHint}}" hint-placeholder-val="{{ false }}">
+        <span style="font-size: 12px; line-height: 1.4; color: #FFB4A8">{{hint}}</span>
+      </sc-if>
+    </div>
+  </main>
+
+  <footer style="padding: 12px 16px 24px">
+    <sc-if value="{{allPass}}" hint-placeholder-val="{{ false }}">
+      <a href="{{nextHref}}" style="height: 54px; border-radius: 14px; background: #4ADE80; color: #0B2414; font-weight: 600; font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>
+        Submit circuit
+      </a>
+    </sc-if>
+    <sc-if value="{{notPass}}" hint-placeholder-val="{{ true }}">
+      <button disabled style="{{waitStyle}}">{{waitText}}</button>
+    </sc-if>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+// Shared two-transistor workbench, the same screen the app uses for Levels 1 and 2.
+// Workbench.dc.html and Workbench2.dc.html are identical except for the level number in level() below.
+class Component extends DCLogic {
+  level() { return 1; }
+  config() { return {
+  1: {
+    title: "Build an AND gate",
+    goal: "Goal: light the LED only when A and B are both on.",
+    target: function (a, b) { return a && b; },
+    fixed: "series",
+    back: "Lesson.dc.html", next: "Complete.dc.html",
+    hints: {}
+  },
+  2: {
+    title: "Build an OR gate",
+    goal: "Goal: light the LED when A or B (or both) is on.",
+    target: function (a, b) { return a || b; },
+    fixed: null,
+    back: "Lesson2.dc.html", next: "Main.dc.html",
+    hints: { series: "Stacked: current needs A and then B. That's AND from Level 1!" }
+  }
+  }[this.level()]; }
+  constructor(props) {
+    super(props);
+    var cfg = this.config();
+    this.state = this.record({ wiring: cfg.fixed, a: false, b: false, results: {} });
+  }
+  // Wire states: q1 = current leaving Q1, q2 = leaving Q2, out = reaching the LED. null = not wired.
+  wires(st) {
+    var a = st.a, b = st.b;
+    if (st.wiring === "series") return { q1: a, q2: a && b, out: a && b };
+    if (st.wiring === "parallel") return { q1: a, q2: b, out: a || b };
+    return { q1: null, q2: null, out: null };
+  }
+  record(st) {
+    var w = this.wires(st);
+    if (w.out === null) return st;
+    var results = Object.assign({}, st.results);
+    results[(st.a ? "1" : "0") + (st.b ? "1" : "0")] = w.out;
+    return Object.assign({}, st, { results: results });
+  }
+  choose(w) {
+    var st = this.state;
+    if (this.config().fixed || st.wiring === w) return;
+    this.setState(this.record(Object.assign({}, st, { wiring: w, results: {} })));
+  }
+  flip(k) {
+    var patch = {}; patch[k] = !this.state[k];
+    this.setState(this.record(Object.assign({}, this.state, patch)));
+  }
+  renderVals() {
+    var self = this, st = this.state, cfg = this.config(), LEVEL = this.level();
+    var HIGH = "#4ADE80", LOW = "#3A4352";
+    var w = this.wires(st);
+    function c(v) { return v ? HIGH : LOW; }
+    function d(v) { return v === null ? "6 6" : "none"; }
+    var wired = st.wiring !== null;
+
+    var combos = ["00", "01", "10", "11"];
+    var key = (st.a ? "1" : "0") + (st.b ? "1" : "0");
+    var pass = 0, anyWrong = false;
+    var rows = combos.map(function (k) {
+      var want = cfg.target(k[0] === "1", k[1] === "1");
+      var has = Object.prototype.hasOwnProperty.call(st.results, k);
+      var got = st.results[k];
+      var ok = has ? got === want : null;
+      if (ok === true) pass++;
+      if (ok === false) anyWrong = true;
+      var now = k === key && wired;
+      return {
+        ab: k[0] + " " + k[1],
+        want: want ? "1" : "0",
+        got: ok === true ? "✓" : ok === false ? "got " + (got ? "1" : "0") : "○",
+        gotStyle: "font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 700; color: " + (ok === true ? HIGH : ok === false ? "#FF8A7A" : "#5B6575"),
+        cellStyle: "padding: 8px 0; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; box-sizing: border-box; " +
+          (now ? "background: #1D1A12; border: 1.5px solid #F5B544;" : ok === false ? "background: #2A1715; border: 1.5px solid transparent;" : "background: #12161C; border: 1.5px solid transparent;")
+      };
+    });
+    var allPass = pass === 4;
+
+    var wirings = [["series", "Stacked", "one after the other"], ["parallel", "Side by side", "two paths"]].map(function (o) {
+      var on = st.wiring === o[0];
+      var locked = cfg.fixed && cfg.fixed !== o[0];
+      var base = "height: 52px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font-family: Inter, sans-serif; padding: 0; ";
+      return {
+        on: on, disabled: !!cfg.fixed,
+        title: o[1],
+        sub: on && cfg.fixed ? "fixed in this level" : locked ? "you'll choose in Level 2" : o[2],
+        titleStyle: "font-size: 15px; font-weight: 600; color: " + (on ? "#F5B544" : locked ? "#8A94A3" : "#E8ECF2"),
+        style: base + (on ? "background: #1D1A12; border: 2px solid #F5B544;" : locked ? "background: #0E1116; border: 1.5px dashed #2A3140;" : "background: #171B22; border: 2px solid #2A3140; cursor: pointer;"),
+        pick: function () { self.choose(o[0]); }
+      };
+    });
+
+    function ioBtn(on) {
+      return "height: 72px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; font-family: Inter, sans-serif; color: #E8ECF2; " +
+        (on ? "background: #12301F; border: 2px solid #4ADE80;" : "background: #171B22; border: 2px solid #2A3140;");
+    }
+    var out = w.out === true;
+    var hint = st.wiring ? cfg.hints[st.wiring] : null;
+    var waitText = !wired ? "Choose how to wire the transistors" : anyWrong ? "A row is wrong — try the other wiring" : "Flip A and B to test every row";
+
+    return {
+      eyebrow: "LEVEL " + LEVEL + " · WORKBENCH", title: cfg.title, goal: cfg.goal,
+      backHref: cfg.back, nextHref: cfg.next,
+      isSeries: st.wiring === "series", isSideBySide: st.wiring !== "series",
+      boardLabel: !wired ? "Two transistors, not wired yet" : (st.wiring === "series" ? "Transistors stacked in series. " : "Transistors side by side. ") + "LED " + (out ? "on" : "off"),
+      boardHint: wired ? "" : "Choose a wiring below",
+      cA: c(st.a), cB: c(st.b),
+      cRail: wired ? HIGH : LOW, dRail: wired ? "none" : "6 6",
+      cQ1: c(w.q1), dQ1: d(w.q1), cQ2: c(w.q2), dQ2: d(w.q2), cOut: c(w.out), dOut: d(w.out),
+      led: out ? HIGH : "#232A36", ledGlow: out ? "rgba(74,222,128,0.25)" : "transparent", ledOpacity: wired ? "1" : "0",
+      wirings: wirings,
+      a: st.a, b: st.b, aVal: st.a ? "1" : "0", bVal: st.b ? "1" : "0", outVal: out ? "1" : "0",
+      btnA: ioBtn(st.a), btnB: ioBtn(st.b),
+      toggleA: function () { self.flip("a"); }, toggleB: function () { self.flip("b"); },
+      outBox: "height: 72px; box-sizing: border-box; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; " +
+        (out ? "background: #4ADE80; color: #0B2414; border: 2px solid #4ADE80;" : "background: #12161C; color: #E8ECF2; border: 2px solid #2A3140;"),
+      outLabelStyle: "font-size: 12px; color: " + (out ? "#0B2414" : "#9AA4B2"),
+      rows: rows, passCount: pass,
+      showHint: anyWrong && !!hint, hint: hint || "",
+      allPass: allPass, notPass: !allPass, waitText: waitText,
+      waitStyle: "width: 100%; height: 54px; border-radius: 14px; font-family: Inter, sans-serif; font-weight: 600; font-size: 15px; " +
+        (anyWrong ? "background: #2A1715; border: 1px solid #6B2C25; color: #FFB4A8;" : "background: #1F2530; border: 1px solid #2A3140; color: #B4BCC8;")
+    };
+  }
+}
+</script>
+</body>
+</html>

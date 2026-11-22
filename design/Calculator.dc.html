@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Milestone: your calculator</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+a{color:#F5B544}a:hover{color:#FFD08A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column">
+
+  <header style="padding: 16px 12px 4px; display: flex; align-items: center; gap: 8px">
+    <a href="Main.dc.html" aria-label="Back to journey" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #C5CCD6">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #F5B544">★ MILESTONE · LEVEL 14</span>
+      <span style="font-size: 16px; font-weight: 600">Your pocket calculator</span>
+    </div>
+  </header>
+
+  <!-- Mode switch -->
+  <div role="group" aria-label="View" style="margin: 4px 16px 0; padding: 4px; border-radius: 12px; background: #171B22; border: 1px solid #2A3140; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px">
+    <button onClick="{{showUse}}" aria-pressed="{{isUse}}" style="{{useTab}}">Use it</button>
+    <button onClick="{{showXray}}" aria-pressed="{{isXray}}" style="{{xrayTab}}">X-ray: see your chips</button>
+  </div>
+
+  <main style="flex: 1; padding: 10px 16px 0; display: flex; flex-direction: column; gap: 10px; min-height: 0">
+
+    <!-- Display (both modes) -->
+    <div style="padding: 12px 14px; border-radius: 16px; background: #0A0D10; border: 2px solid #232A36; display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 12px">
+        <span style="color: #9AA4B2">{{pending}}</span>
+        <span style="display: flex; align-items: center; gap: 6px; color: #9AA4B2">Cout <span style="{{coutLamp}}"></span></span>
+      </div>
+      <div role="status" aria-label="{{displayLabel}}" style="display: flex; justify-content: flex-end; gap: 12px; height: 64px">
+        <sc-for list="{{digits}}" as="d" hint-placeholder-count="4">
+          <div style="position: relative; width: 36px; height: 64px">
+            <sc-for list="{{d.segs}}" as="s" hint-placeholder-count="7">
+              <div style="{{s.style}}"></div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4B2; border-top: 1px solid #1B2028; padding-top: 6px">
+        <span>bus {{busBin}}</span>
+        <span>{{keyCode}}</span>
+      </div>
+    </div>
+
+    <!-- USE MODE -->
+    <sc-if value="{{isUse}}" hint-placeholder-val="{{ true }}">
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{keys}}" as="k" hint-placeholder-count="15">
+          <button onClick="{{k.press}}" aria-label="{{k.aria}}" style="{{k.style}}">{{k.label}}</button>
+        </sc-for>
+      </div>
+
+      <div style="padding: 10px 12px; border-radius: 14px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 13px; font-weight: 600">Try it · {{doneCount}}/3</span>
+        <sc-for list="{{challenges}}" as="c" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px">
+            <sc-if value="{{c.done}}" hint-placeholder-val="{{ false }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="done"><path d="M5 12l5 5L20 7"></path></svg>
+            </sc-if>
+            <sc-if value="{{c.todo}}" hint-placeholder-val="{{ true }}">
+              <span style="width: 14px; height: 14px; border-radius: 50%; border: 2px dashed #5B6575"></span>
+            </sc-if>
+            <span style="font-family: 'JetBrains Mono', monospace; color: #E8ECF2; min-width: 82px">{{c.expr}}</span>
+            <span style="color: #9AA4B2">{{c.why}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- X-RAY MODE -->
+    <sc-if value="{{isXray}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 0">
+        <sc-for list="{{blocks}}" as="b" hint-placeholder-count="5">
+          <div style="{{b.cardStyle}}">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+              <span style="font-size: 14px; font-weight: 600">{{b.name}}</span>
+              <span style="{{b.tagStyle}}">{{b.tag}}</span>
+            </div>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C5CCD6">{{b.value}}</span>
+          </div>
+          <sc-if value="{{b.arrow}}" hint-placeholder-val="{{ true }}">
+            <div style="height: 20px; display: flex; align-items: center; justify-content: center; gap: 8px">
+              <svg width="12" height="18" viewBox="0 0 12 18" fill="none" stroke="#4ADE80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 1v15M1 11l5 5 5-5"></path></svg>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #9AA4B2">{{b.bus}}</span>
+            </div>
+          </sc-if>
+        </sc-for>
+      </div>
+      <span style="font-size: 12px; line-height: 1.4; color: #9AA4B2">Switch back to Use it and press keys: every value here updates live.</span>
+    </sc-if>
+  </main>
+
+  <footer style="padding: 10px 16px 22px">
+    <sc-if value="{{allDone}}" hint-placeholder-val="{{ false }}">
+      <a href="Main.dc.html" style="height: 54px; border-radius: 14px; background: #F5B544; color: #1A1406; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">
+        ★ Chapter 3 complete — on to Memory
+      </a>
+    </sc-if>
+    <sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}">
+      <button disabled style="width: 100%; height: 54px; border-radius: 14px; background: #1F2530; border: 1px solid #2A3140; color: #B4BCC8; font-family: Inter, sans-serif; font-weight: 600; font-size: 15px">Solve the 3 sums to finish the chapter</button>
+    </sc-if>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      mode: 'use', cur: 125, acc: null, op: null, fresh: false,
+      shown: 125, last: null, lastKey: '5', done: {}
+    };
+  }
+  alu(a, op, b) {
+    var a8 = a & 255, b8 = b & 255, s;
+    if (op === '+') s = a8 + b8;
+    else s = a8 + ((~b8) & 255) + 1;
+    var r = s & 255, cout = s > 255;
+    var shown;
+    if (op === '+') shown = cout ? 'OF' : r;
+    else shown = cout ? r : -(256 - r);
+    return { a: a8, b: b8, op: op, r: r, cout: cout, lt: a8 < b8, shown: shown };
+  }
+  digit(d) {
+    var st = this.state;
+    var cur = (st.fresh || st.cur === null) ? d : st.cur * 10 + d;
+    if (cur > 255) return;
+    var patch = { cur: cur, shown: cur, fresh: false, lastKey: '' + d };
+    if (st.op === '=') { patch.acc = null; patch.op = null; patch.last = null; }
+    this.setState(patch);
+  }
+  operator(o) {
+    var st = this.state;
+    if (st.acc !== null && st.op && st.op !== '=' && st.fresh) { this.setState({ op: o, lastKey: o }); return; }
+    var acc, last = st.last, shown = st.shown;
+    if (st.acc !== null && st.op && st.op !== '=') {
+      last = this.alu(st.acc, st.op, st.cur || 0);
+      shown = last.shown;
+      acc = last.r;
+    } else if (st.cur !== null) {
+      acc = st.cur;
+    } else {
+      acc = typeof st.shown === 'number' ? (st.shown & 255) : (st.last ? st.last.r : 0);
+    }
+    this.setState({ acc: acc, op: o, fresh: true, last: last, shown: shown, lastKey: o });
+  }
+  equals() {
+    var st = this.state;
+    if (st.acc === null || !st.op || st.op === '=') return;
+    var b = st.cur === null ? 0 : st.cur;
+    var res = this.alu(st.acc, st.op, b);
+    var done = Object.assign({}, st.done);
+    var key = st.acc + st.op + b;
+    if (key === '125+99') done.c1 = true;
+    if (key === '42-100') done.c2 = true;
+    if (key === '200+100') done.c3 = true;
+    this.setState({ last: res, shown: res.shown, op: '=', acc: null, cur: null, fresh: true, lastKey: '=', done: done });
+  }
+  clear() { this.setState({ cur: 0, acc: null, op: null, fresh: true, shown: 0, last: null, lastKey: 'C' }); }
+  back() {
+    var st = this.state;
+    if (st.fresh || st.cur === null) return;
+    var cur = Math.floor(st.cur / 10);
+    this.setState({ cur: cur, shown: cur, lastKey: '⌫' });
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var ON = '#4ADE80', OFF = '#18211B';
+    var SEG = {
+      a: 'left: 6px; top: 0; width: 24px; height: 6px;',
+      b: 'left: 30px; top: 5px; width: 6px; height: 25px;',
+      c: 'left: 30px; top: 34px; width: 6px; height: 25px;',
+      d: 'left: 6px; top: 58px; width: 24px; height: 6px;',
+      e: 'left: 0; top: 34px; width: 6px; height: 25px;',
+      f: 'left: 0; top: 5px; width: 6px; height: 25px;',
+      g: 'left: 6px; top: 29px; width: 24px; height: 6px;'
+    };
+    var MAP = { '0': 'abcdef', '1': 'bc', '2': 'abged', '3': 'abgcd', '4': 'fgbc', '5': 'afgcd', '6': 'afgedc', '7': 'abc', '8': 'abcdefg', '9': 'abcfgd', '-': 'g', 'O': 'abcdef', 'F': 'aefg', ' ': '' };
+    function digitOf(ch) {
+      var on = MAP[ch] || '';
+      return { segs: 'abcdefg'.split('').map(function (s) {
+        var lit = on.indexOf(s) >= 0;
+        return { style: 'position: absolute; ' + SEG[s] + ' border-radius: 3px; background: ' + (lit ? ON : OFF) + (lit ? '; box-shadow: 0 0 8px rgba(74,222,128,0.45)' : '') };
+      }) };
+    }
+    var shown = st.shown, chars;
+    if (shown === 'OF') chars = [' ', ' ', 'O', 'F'];
+    else {
+      var mag = '' + Math.abs(shown);
+      while (mag.length < 3) mag = ' ' + mag;
+      chars = [shown < 0 ? '-' : ' '].concat(mag.split(''));
+    }
+    function bin8(n) { var s = (n & 255).toString(2); while (s.length < 8) s = '0' + s; return s; }
+    var busVal = shown === 'OF' ? (st.last ? st.last.r : 0) : (shown & 255);
+    var CODES = { '+': 'op + → ADD', '-': 'op − → SUB', '=': '= → latch result', 'C': 'C → clear', '⌫': '⌫ → shift right' };
+    var keyCode = /^[0-9]$/.test(st.lastKey) ? 'key ' + st.lastKey + ' → ' + bin8(+st.lastKey).slice(4) : (CODES[st.lastKey] || '');
+
+    var keyBase = 'height: 54px; border-radius: 12px; font-family: Space Grotesk, sans-serif; font-size: 22px; font-weight: 700; cursor: pointer; ';
+    var numStyle = keyBase + 'background: #171B22; border: 1px solid #2A3140; color: #E8ECF2;';
+    var opStyle = keyBase + 'background: #1D1A12; border: 1px solid #4A3B17; color: #F5B544;';
+    function k(label, aria, press, style) { return { label: label, aria: aria, press: press, style: style }; }
+    function num(n) { return k('' + n, 'digit ' + n, function () { self.digit(n); }, numStyle); }
+    var keys = [
+      num(7), num(8), num(9), k('C', 'clear', function () { self.clear(); }, keyBase + 'background: #2A1715; border: 1px solid #6B2C25; color: #FFB4A8;'),
+      num(4), num(5), num(6), k('−', 'minus', function () { self.operator('-'); }, opStyle),
+      num(1), num(2), num(3), k('+', 'plus', function () { self.operator('+'); }, opStyle),
+      num(0), k('⌫', 'delete digit', function () { self.back(); }, numStyle),
+      k('=', 'equals', function () { self.equals(); }, keyBase + 'grid-column: span 2; background: #4ADE80; border: none; color: #0B2414;')
+    ];
+
+    var done = st.done || {};
+    var challenges = [
+      { id: 'c1', expr: '125 + 99', why: 'carries ripple through 8 bits' },
+      { id: 'c2', expr: '42 − 100', why: 'goes negative: no Cout' },
+      { id: 'c3', expr: '200 + 100', why: 'too big for 8 bits' }
+    ].map(function (c) { return { expr: c.expr, why: c.why, done: !!done[c.id], todo: !done[c.id] }; });
+    var doneCount = challenges.filter(function (c) { return c.done; }).length;
+
+    var L = st.last;
+    var opName = st.op === '+' ? 'ADD' : st.op === '-' ? 'SUB' : L ? (L.op === '+' ? 'ADD' : 'SUB') : '—';
+    var tag = function (t, preview) {
+      return 'flex-shrink: 0; padding: 2px 8px; border-radius: 6px; font-family: JetBrains Mono, monospace; font-size: 11px; font-weight: 700; ' +
+        (preview ? 'background: #232A36; color: #C5CCD6;' : 'background: #12301F; color: #4ADE80;');
+    };
+    var card = function (preview) {
+      return 'padding: 10px 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 4px; ' +
+        (preview ? 'background: #12161C; border: 1.5px dashed #5B6575;' : 'background: #171B22; border: 1.5px solid #2A3140;');
+    };
+    var accVal = st.acc !== null ? st.acc : (L ? L.a : 0);
+    var blocks = [
+      { name: 'Keypad encoder', tag: 'L13 · yours', preview: false, value: keyCode || 'waiting for a key', bus: '4-bit key code' },
+      { name: 'Latch A', tag: 'Ch 4 preview', preview: true, value: 'holds ' + accVal + ' = ' + bin8(accVal) + ' (you build this in Memory)', bus: 'A, 8 bits' },
+      { name: '8-bit ALU (2 × your 4-bit)', tag: 'L12 · yours', preview: false,
+        value: L ? opName + ' ' + bin8(L.a) + ', ' + bin8(L.b) + ' → ' + bin8(L.r) + ' · Cout ' + (L.cout ? 1 : 0) : 'op ' + opName + ' · press = to run', bus: 'result + Cout' },
+      { name: 'Comparator', tag: 'L10 · yours', preview: false,
+        value: L ? 'A < B? ' + (L.lt ? 'yes' : 'no') + (L.op === '-' && L.lt ? ' → show minus sign' : ' → no sign') : 'A < B? —', bus: 'sign flag' },
+      { name: '7-segment decoder', tag: 'L11 · yours', preview: false,
+        value: 'shows "' + chars.join('').trim() + '" on 4 digits', bus: '' }
+    ].map(function (b, i, arr) {
+      return { name: b.name, tag: b.tag, value: b.value, bus: b.bus, arrow: i < arr.length - 1, cardStyle: card(b.preview), tagStyle: tag(b.tag, b.preview) };
+    });
+
+    var tabBase = 'height: 40px; border-radius: 9px; border: none; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; ';
+    var isUse = st.mode === 'use';
+    var pendingOp = st.op === '+' ? '+' : st.op === '-' ? '−' : '';
+    return {
+      isUse: isUse, isXray: !isUse,
+      showUse: function () { self.setState({ mode: 'use' }); },
+      showXray: function () { self.setState({ mode: 'xray' }); },
+      useTab: tabBase + (isUse ? 'background: #2A3140; color: #E8ECF2;' : 'background: transparent; color: #9AA4B2;'),
+      xrayTab: tabBase + (!isUse ? 'background: #2A3140; color: #E8ECF2;' : 'background: transparent; color: #9AA4B2;'),
+      pending: st.acc !== null && pendingOp ? st.acc + ' ' + pendingOp : (L && st.op === '=' ? 'result' : '8-bit · 0–255'),
+      coutLamp: 'width: 10px; height: 10px; border-radius: 50%; background: ' + (L && L.cout ? '#4ADE80' : '#232A36'),
+      digits: chars.map(digitOf),
+      displayLabel: 'Display: ' + (shown === 'OF' ? 'overflow' : shown),
+      busBin: bin8(busVal), keyCode: keyCode,
+      keys: keys,
+      challenges: challenges, doneCount: doneCount, allDone: doneCount === 3, notDone: doneCount < 3,
+      blocks: blocks
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson: AND gate</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+a{color:#F5B544}a:hover{color:#FFD08A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column">
+
+  <header style="padding: 16px 12px 8px; display: flex; align-items: center; gap: 8px">
+    <a href="Main.dc.html" aria-label="Back to journey" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #C5CCD6">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">LEVEL 1 · LESSON</span>
+      <span style="font-size: 16px; font-weight: 600">AND gate</span>
+    </div>
+    <div aria-label="Step 1 of 3" style="display: flex; gap: 6px; padding-right: 8px">
+      <span style="width: 20px; height: 6px; border-radius: 3px; background: #F5B544"></span>
+      <span style="width: 6px; height: 6px; border-radius: 3px; background: #2A3140"></span>
+      <span style="width: 6px; height: 6px; border-radius: 3px; background: #2A3140"></span>
+    </div>
+  </header>
+
+  <main style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 20px 0; display: flex; flex-direction: column; gap: 18px">
+    <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 28px; line-height: 1.15; font-weight: 700">A transistor is a switch you flip with electricity</h1>
+
+    <div style="padding: 16px; border-radius: 16px; background: #171B22; border: 1px solid #2A3140; display: flex; gap: 16px; align-items: center">
+      <svg width="96" height="110" viewBox="0 0 96 110" role="img" aria-label="Transistor symbol: base input on the left, current flows from top to bottom when the base is on">
+        <line x1="62" y1="0" x2="62" y2="30" stroke="#4ADE80" stroke-width="3"></line>
+        <line x1="62" y1="80" x2="62" y2="110" stroke="#4ADE80" stroke-width="3"></line>
+        <circle cx="52" cy="55" r="26" fill="none" stroke="#5B6575" stroke-width="2"></circle>
+        <line x1="42" y1="40" x2="42" y2="70" stroke="#E8ECF2" stroke-width="3"></line>
+        <line x1="42" y1="48" x2="62" y2="30" stroke="#E8ECF2" stroke-width="2.5"></line>
+        <line x1="42" y1="62" x2="62" y2="80" stroke="#E8ECF2" stroke-width="2.5"></line>
+        <line x1="4" y1="55" x2="42" y2="55" stroke="#F5B544" stroke-width="3"></line>
+        <circle cx="4" cy="55" r="4" fill="#F5B544"></circle>
+      </svg>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 15px; font-weight: 600">Base ON → current flows</span>
+        <span style="font-size: 14px; line-height: 1.45; color: #9AA4B2">Put voltage on the <span style="color: #F5B544">base</span> and current passes from top to bottom. Remove it and the path is cut.</span>
+      </div>
+    </div>
+
+    <div style="padding: 16px; border-radius: 16px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 10px">
+      <span style="font-size: 15px; font-weight: 600">Two switches in a row</span>
+      <span style="font-size: 14px; line-height: 1.45; color: #9AA4B2">Stack transistor A on top of transistor B. Current reaches the LED only if <strong style="color: #E8ECF2">A and B</strong> are both on.</span>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: center">
+        <span style="padding: 6px 0; color: #9AA4B2">A</span>
+        <span style="padding: 6px 0; color: #9AA4B2">B</span>
+        <span style="padding: 6px 0; color: #9AA4B2">LED</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">0</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">0</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C; color: #9AA4B2">off</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">0</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">1</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C; color: #9AA4B2">off</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">1</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C">0</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12161C; color: #9AA4B2">off</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12301F; color: #4ADE80">1</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12301F; color: #4ADE80">1</span>
+        <span style="padding: 6px 0; border-radius: 6px; background: #12301F; color: #4ADE80; font-weight: 700">ON</span>
+      </div>
+    </div>
+
+    <div style="padding: 14px 16px; border-radius: 14px; background: #1D1A12; border: 1px solid #4A3B17; display: flex; gap: 12px; align-items: flex-start">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5B544" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="4"></circle></svg>
+      <span style="font-size: 14px; line-height: 1.45; color: #E8ECF2"><strong>Your goal:</strong> wire two transistors so the LED lights only when A and B are both on. Test all 4 input combinations.</span>
+    </div>
+  </main>
+
+  <footer style="padding: 12px 20px 24px; display: flex; flex-direction: column; gap: 8px">
+    <a href="Workbench.dc.html" style="height: 54px; border-radius: 14px; background: #F5B544; color: #1A1406; font-weight: 600; font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">Start · Normal
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+    <a href="WorkbenchHard.dc.html" style="height: 54px; box-sizing: border-box; border-radius: 14px; border: 1px solid #2A3140; color: #E8ECF2; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; text-decoration: none">Hard mode · build it yourself</a>
+    <span style="text-align: center; font-size: 13px; color: #9AA4B2">Either mode unlocks the AND chip. Hard adds a ★ on the map.</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

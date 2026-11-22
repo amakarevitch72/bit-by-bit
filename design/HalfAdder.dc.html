@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workbench: half adder</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+a{color:#F5B544}a:hover{color:#FFD08A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column">
+
+  <header style="padding: 16px 12px 4px; display: flex; align-items: center; gap: 8px">
+    <a href="Lesson6.dc.html" aria-label="Back to lesson" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #C5CCD6">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">LEVEL 6 · WORKBENCH</span>
+      <span style="font-size: 16px; font-weight: 600">Build a half adder</span>
+    </div>
+    <button aria-label="Hint" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #2A3140; background: #171B22; color: #F5B544; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"></path></svg>
+    </button>
+  </header>
+
+  <main style="flex: 1; padding: 4px 16px 0; display: flex; flex-direction: column; gap: 10px">
+    <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #C5CCD6">Add two bits. <strong style="color: #E8ECF2">S</strong> is the sum bit, <strong style="color: #E8ECF2">C</strong> the carry: 1 + 1 = <span style="font-family: 'JetBrains Mono', monospace">10</span> in binary.</p>
+
+    <!-- Board -->
+    <div style="position: relative; height: 240px; border-radius: 18px; background-color: #12161C; border: 1px solid #232A36; background-image: radial-gradient(#232A36 1px, transparent 1px); background-size: 16px 16px; overflow: hidden">
+      <svg width="358" height="240" viewBox="0 0 358 240" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+        <!-- A -->
+        <text x="10" y="76" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700">A</text>
+        <circle cx="34" cy="70" r="8" fill="{{inA}}"></circle>
+        <line x1="42" y1="70" x2="90" y2="70" stroke="{{inA}}" stroke-width="3"></line>
+        <line x1="90" y1="48" x2="90" y2="168" stroke="{{inA}}" stroke-width="3"></line>
+        <line x1="90" y1="48" x2="150" y2="48" stroke="{{inA}}" stroke-width="3"></line>
+        <line x1="90" y1="168" x2="150" y2="168" stroke="{{inA}}" stroke-width="3"></line>
+        <circle cx="90" cy="70" r="5" fill="{{inA}}"></circle>
+        <!-- B -->
+        <text x="10" y="198" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700">B</text>
+        <circle cx="34" cy="192" r="8" fill="{{inB}}"></circle>
+        <line x1="42" y1="192" x2="150" y2="192" stroke="{{inB}}" stroke-width="3"></line>
+        <line x1="114" y1="72" x2="114" y2="192" stroke="{{inB}}" stroke-width="3"></line>
+        <line x1="114" y1="72" x2="150" y2="72" stroke="{{inB}}" stroke-width="3"></line>
+        <circle cx="114" cy="192" r="5" fill="{{inB}}"></circle>
+        <!-- Outputs -->
+        <line x1="230" y1="60" x2="296" y2="60" stroke="{{wS}}" stroke-width="3" stroke-dasharray="{{dashS}}"></line>
+        <circle cx="312" cy="60" r="16" fill="{{glowS}}"></circle>
+        <circle cx="312" cy="60" r="10" fill="{{ledS}}" stroke="#5B6575" stroke-width="2"></circle>
+        <text x="306" y="96" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700">S</text>
+        <line x1="230" y1="180" x2="296" y2="180" stroke="{{wC}}" stroke-width="3" stroke-dasharray="{{dashC}}"></line>
+        <circle cx="312" cy="180" r="16" fill="{{glowC}}"></circle>
+        <circle cx="312" cy="180" r="10" fill="{{ledC}}" stroke="#5B6575" stroke-width="2"></circle>
+        <text x="306" y="216" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700">C</text>
+      </svg>
+      <button onClick="{{placeS}}" aria-label="{{labelS}}" style="{{sockS}}">{{symS}}</button>
+      <button onClick="{{placeC}}" aria-label="{{labelC}}" style="{{sockC}}">{{symC}}</button>
+    </div>
+
+    <!-- Chip tray -->
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; color: #9AA4B2">{{trayHint}}</span>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{tray}}" as="t" hint-placeholder-count="4">
+          <button onClick="{{t.pick}}" aria-pressed="{{t.selected}}" style="{{t.style}}">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700">{{t.sym}}</span>
+            <span style="font-size: 11px; color: #9AA4B2">{{t.name}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- Inputs + result -->
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <button onClick="{{toggleA}}" aria-pressed="{{a}}" style="{{btnA}}">
+        <span style="font-size: 12px; color: #9AA4B2">Input A</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700">{{aVal}}</span>
+      </button>
+      <button onClick="{{toggleB}}" aria-pressed="{{b}}" style="{{btnB}}">
+        <span style="font-size: 12px; color: #9AA4B2">Input B</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700">{{bVal}}</span>
+      </button>
+      <div role="status" style="height: 64px; border-radius: 14px; background: #12161C; border: 2px solid #2A3140; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+        <span style="font-size: 12px; color: #9AA4B2">C S</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700">{{resultText}}</span>
+      </div>
+    </div>
+
+    <!-- Truth table -->
+    <div style="padding: 10px 12px; border-radius: 14px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 4px">
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); font-size: 12px; color: #9AA4B2; padding: 0 8px">
+        <span>A B</span><span>want C S</span><span>got C S</span><span style="text-align: right">{{passCount}}/4</span>
+      </div>
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+        <div style="{{r.rowStyle}}">
+          <span>{{r.ab}}</span>
+          <span>{{r.want}}</span>
+          <span style="{{r.gotStyle}}">{{r.got}}</span>
+          <span style="display: flex; justify-content: flex-end">
+            <sc-if value="{{r.ok}}" hint-placeholder-val="{{ false }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="correct"><path d="M5 12l5 5L20 7"></path></svg>
+            </sc-if>
+            <sc-if value="{{r.bad}}" hint-placeholder-val="{{ false }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF8A7A" stroke-width="3" stroke-linecap="round" role="img" aria-label="wrong"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+            </sc-if>
+            <sc-if value="{{r.untested}}" hint-placeholder-val="{{ true }}">
+              <span style="width: 14px; height: 14px; border-radius: 50%; border: 2px dashed #5B6575"></span>
+            </sc-if>
+          </span>
+        </div>
+      </sc-for>
+    </div>
+  </main>
+
+  <footer style="padding: 10px 16px 24px">
+    <sc-if value="{{allPass}}" hint-placeholder-val="{{ false }}">
+      <a href="Main.dc.html" style="height: 54px; border-radius: 14px; background: #4ADE80; color: #0B2414; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>
+        It adds! Unlock the HA chip
+      </a>
+    </sc-if>
+    <sc-if value="{{notPass}}" hint-placeholder-val="{{ true }}">
+      <button disabled style="{{waitStyle}}">{{waitText}}</button>
+    </sc-if>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { a: false, b: false, s: 'XOR', c: null, sel: null, tested: {} };
+  }
+  gate(g, a, b) {
+    if (g === 'XOR') return a !== b;
+    if (g === 'AND') return a && b;
+    if (g === 'OR') return a || b;
+    if (g === 'NAND') return !(a && b);
+    return null;
+  }
+  record(st) {
+    var tested = Object.assign({}, st.tested);
+    if (st.s && st.c) {
+      tested[(st.a ? '1' : '0') + (st.b ? '1' : '0')] = {
+        s: this.gate(st.s, st.a, st.b), c: this.gate(st.c, st.a, st.b)
+      };
+    }
+    return tested;
+  }
+  flip(which) {
+    var st = Object.assign({}, this.state);
+    st[which] = !st[which];
+    st.tested = this.record(st);
+    this.setState(st);
+  }
+  place(slot) {
+    var st = Object.assign({}, this.state);
+    if (st.sel) { st[slot] = st.sel; st.sel = null; }
+    else if (st[slot]) { st[slot] = null; }
+    else { return; }
+    st.tested = {};
+    st.tested = this.record(st);
+    this.setState(st);
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var HIGH = '#4ADE80', LOW = '#3A4352';
+    var SYM = { XOR: '=1', AND: '&', OR: '≥1', NAND: '¬&' };
+    var a = !!st.a, b = !!st.b;
+    var sv = st.s ? this.gate(st.s, a, b) : null;
+    var cv = st.c ? this.gate(st.c, a, b) : null;
+
+    function sock(top, chip) {
+      var base = 'position: absolute; left: 150px; top: ' + top + 'px; width: 80px; height: 64px; box-sizing: border-box; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: JetBrains Mono, monospace; font-size: 22px; font-weight: 700; cursor: pointer; ';
+      if (chip) return base + 'background: #171B22; border: 2px solid #4ADE80; color: #E8ECF2;';
+      if (st.sel) return base + 'background: #1D1A12; border: 2px dashed #F5B544; color: #F5B544;';
+      return base + 'background: #12161C; border: 2px dashed #5B6575; color: #8A94A3;';
+    }
+    function ioBtn(on) {
+      return 'height: 64px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; font-family: Inter, sans-serif; color: #E8ECF2; ' +
+        (on ? 'background: #12301F; border: 2px solid #4ADE80;' : 'background: #171B22; border: 2px solid #2A3140;');
+    }
+    var tray = ['XOR', 'AND', 'OR', 'NAND'].map(function (g) {
+      var selected = st.sel === g;
+      return {
+        sym: SYM[g], name: g, selected: selected,
+        pick: function () { self.setState({ sel: selected ? null : g }); },
+        style: 'height: 56px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; font-family: Inter, sans-serif; color: #E8ECF2; ' +
+          (selected ? 'background: #1D1A12; border: 2px solid #F5B544;' : 'background: #171B22; border: 2px solid #2A3140;')
+      };
+    });
+
+    var tested = st.tested || {};
+    var pass = 0, anyBad = false;
+    var rows = ['00', '01', '10', '11'].map(function (k) {
+      var ka = k[0] === '1', kb = k[1] === '1';
+      var want = (ka && kb ? '1' : '0') + ' ' + (ka !== kb ? '1' : '0');
+      var t = tested[k];
+      var got = t ? (t.c ? '1' : '0') + ' ' + (t.s ? '1' : '0') : '– –';
+      var ok = !!t && got === want, bad = !!t && got !== want;
+      if (ok) pass++;
+      if (bad) anyBad = true;
+      var isNow = k === (a ? '1' : '0') + (b ? '1' : '0');
+      return {
+        ab: k[0] + ' ' + k[1], want: want, got: got, ok: ok, bad: bad, untested: !t,
+        gotStyle: bad ? 'color: #FF8A7A; font-weight: 700' : 'color: #E8ECF2',
+        rowStyle: 'display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; padding: 5px 8px; border-radius: 8px; font-family: JetBrains Mono, monospace; font-size: 13px; ' +
+          (isNow ? 'background: #1D1A12; box-shadow: inset 0 0 0 1.5px #F5B544;' : 'background: #12161C;')
+      };
+    });
+    var allPass = pass === 4;
+    var waitText = !(st.s && st.c) ? 'Fill both sockets to power the board'
+      : anyBad ? 'A row is wrong — swap a chip' : 'Flip A and B to test every row';
+
+    return {
+      a: a, b: b, aVal: a ? '1' : '0', bVal: b ? '1' : '0',
+      inA: a ? HIGH : LOW, inB: b ? HIGH : LOW,
+      wS: sv ? HIGH : LOW, wC: cv ? HIGH : LOW,
+      dashS: sv === null ? '6 6' : 'none', dashC: cv === null ? '6 6' : 'none',
+      ledS: sv ? HIGH : '#232A36', ledC: cv ? HIGH : '#232A36',
+      glowS: sv ? 'rgba(74,222,128,0.25)' : 'transparent', glowC: cv ? 'rgba(74,222,128,0.25)' : 'transparent',
+      symS: st.s ? SYM[st.s] : '+', symC: st.c ? SYM[st.c] : '+',
+      labelS: st.s ? 'Sum socket: ' + st.s + ' chip. Tap to remove' : 'Empty sum socket',
+      labelC: st.c ? 'Carry socket: ' + st.c + ' chip. Tap to remove' : 'Empty carry socket',
+      sockS: sock(28, st.s), sockC: sock(148, st.c),
+      placeS: function () { self.place('s'); }, placeC: function () { self.place('c'); },
+      tray: tray,
+      trayHint: st.sel ? 'NOW TAP A SOCKET ON THE BOARD' : 'YOUR CHIPS — TAP ONE, THEN A SOCKET',
+      btnA: ioBtn(a), btnB: ioBtn(b),
+      toggleA: function () { self.flip('a'); }, toggleB: function () { self.flip('b'); },
+      resultText: (cv === null || sv === null) ? '? ?' : (cv ? '1' : '0') + ' ' + (sv ? '1' : '0'),
+      rows: rows, passCount: pass, allPass: allPass, notPass: !allPass,
+      waitText: waitText,
+      waitStyle: 'width: 100%; height: 54px; border-radius: 14px; font-family: Inter, sans-serif; font-weight: 600; font-size: 15px; ' +
+        (anyBad ? 'background: #2A1715; border: 1px solid #6B2C25; color: #FFB4A8;' : 'background: #1F2530; border: 1px solid #2A3140; color: #B4BCC8;')
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BitByBit" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#FF0E1116</item>
+        <item name="android:windowSplashScreenBackground">#FF0E1116</item>
+    </style>
+</resources>

@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "notes": "Level definitions. 'mockup' = approved screen in design/. 'status': designed | not_designed. Chip ids are used in 'tray', 'solution' and 'unlocks'. Bits are LSB = index 0.",
+  "chips": {
+    "TRANSISTOR": { "symbol": "T", "name": "Transistor", "inputs": ["base"], "outputs": [], "builtFrom": "starting part" },
+    "AND": { "symbol": "&", "inputs": ["A", "B"], "outputs": ["Y"], "builtFrom": "2 transistors" },
+    "OR": { "symbol": "≥1", "inputs": ["A", "B"], "outputs": ["Y"], "builtFrom": "2 transistors" },
+    "NOT": { "symbol": "1○", "inputs": ["A"], "outputs": ["Y"], "builtFrom": "1 transistor" },
+    "NAND": { "symbol": "&○", "inputs": ["A", "B"], "outputs": ["Y"], "builtFrom": "AND + NOT" },
+    "NOR": { "symbol": "≥1○", "inputs": ["A", "B"], "outputs": ["Y"], "builtFrom": "OR + NOT" },
+    "XOR": { "symbol": "=1", "inputs": ["A", "B"], "outputs": ["Y"], "builtFrom": "NAND, OR, AND" },
+    "HA": { "symbol": "HA", "name": "Half adder", "inputs": ["A", "B"], "outputs": ["S", "C"], "builtFrom": "XOR + AND" },
+    "FA": { "symbol": "FA", "name": "Full adder", "inputs": ["A", "B", "Cin"], "outputs": ["S", "Cout"], "builtFrom": "2 HA + OR" },
+    "ADD4": { "symbol": "Σ4", "name": "4-bit adder", "inputs": ["A[4]", "B[4]", "Cin"], "outputs": ["S[4]", "Cout"], "builtFrom": "4 FA" },
+    "SUB4": { "symbol": "−4", "name": "4-bit subtractor", "builtFrom": "ADD4 + 4 NOT, Cin = 1" },
+    "CMP4": { "symbol": "<", "name": "Comparator" },
+    "SEG7": { "symbol": "8.", "name": "7-segment decoder" },
+    "ALU4": { "symbol": "ALU", "name": "4-bit ALU" },
+    "KEYENC": { "symbol": "⌨", "name": "Keypad encoder" },
+    "LATCH": { "symbol": "SR", "name": "SR latch", "inputs": ["S", "R"], "outputs": ["Q", "Q̄"], "builtFrom": "2 NOR + feedback" },
+    "DFF": { "symbol": "D", "name": "D flip-flop" },
+    "REG4": { "symbol": "R4", "name": "4-bit register" },
+    "CNT4": { "symbol": "+1", "name": "Counter" },
+    "RAM16": { "symbol": "RAM", "name": "16-byte RAM" }
+  },
+  "chapters": [
+    { "id": 1, "title": "Logic gates", "blurb": "Wire transistors into the gates every chip is made of." },
+    { "id": 2, "title": "Arithmetic", "blurb": "Combine your gates until bits can add up." },
+    { "id": 3, "title": "Calculator", "milestone": true, "blurb": "Decode digits, build an ALU, wire a keypad — then use the calculator you made." },
+    { "id": 4, "title": "Memory", "blurb": "Feed outputs back into inputs so a circuit can remember." },
+    { "id": 5, "title": "Mini computer", "milestone": true, "blurb": "Assemble a tiny CPU from your own chips and run a program on it." }
+  ],
+  "levels": [
+    {
+      "n": 1, "chapter": 1, "id": "and", "title": "AND gate", "desc": "2 transistors in series",
+      "status": "designed", "mockup": ["design/Lesson.dc.html", "design/Workbench.dc.html", "design/Complete.dc.html"],
+      "kind": "transistor", "inputs": ["A", "B"], "outputs": ["OUT"],
+      "board": "+5V → Q1 (base A) → Q2 (base B) → LED → GND; pre-wired in Level 1",
+      "test": { "type": "truth_table_manual", "rows": 4 },
+      "expected": "OUT = A AND B", "unlocks": "AND"
+    },
+    { "n": 2, "chapter": 1, "id": "or", "title": "OR gate", "desc": "2 transistors in parallel", "status": "built_in_app", "implementation": "app/.../ui/screens/OrWorkbench.kt + sim TransistorPairBoard", "kind": "transistor_wiring", "inputs": ["A", "B"], "outputs": ["OUT"], "choices": ["SERIES", "PARALLEL"], "start": { "wiring": null }, "solution": "PARALLEL", "wrongChoiceHint": "Stacked means current must pass through A and then B — that is the AND gate from Level 1.", "expected": "OUT = A OR B", "test": { "type": "truth_table_manual", "rows": 4, "clearsOn": "wiring change" }, "unlocks": "OR" },
+    { "n": 3, "chapter": 1, "id": "not", "title": "NOT gate", "desc": "Flip a signal", "status": "not_designed", "kind": "transistor", "inputs": ["A"], "outputs": ["OUT"], "expected": "OUT = NOT A", "test": { "type": "truth_table_manual", "rows": 2 }, "unlocks": "NOT" },
+    { "n": 4, "chapter": 1, "id": "nand_nor", "title": "NAND & NOR", "desc": "The universal gates", "status": "not_designed", "kind": "chips", "tray": ["AND", "OR", "NOT"], "expected": "NAND = NOT(A AND B); NOR = NOT(A OR B)", "test": { "type": "truth_table_manual", "rows": 4 }, "unlocks": ["NAND", "NOR"] },
+    { "n": 5, "chapter": 1, "id": "xor", "title": "XOR gate", "desc": "One or the other, not both", "status": "not_designed", "kind": "chips", "tray": ["AND", "OR", "NAND", "NOR"], "solution": "(A OR B) AND (A NAND B)", "test": { "type": "truth_table_manual", "rows": 4 }, "unlocks": "XOR" },
+    {
+      "n": 6, "chapter": 2, "id": "half_adder", "title": "Half adder", "desc": "Sum + carry of two bits",
+      "status": "designed", "mockup": ["design/HalfAdder.dc.html"], "kind": "chips",
+      "inputs": ["A", "B"], "outputs": ["S", "C"],
+      "sockets": [{ "id": "s", "drives": "S", "inputs": ["A", "B"] }, { "id": "c", "drives": "C", "inputs": ["A", "B"] }],
+      "tray": ["XOR", "AND", "OR", "NAND"],
+      "start": { "sockets": { "s": "XOR", "c": null } },
+      "solution": { "s": "XOR", "c": "AND" },
+      "test": { "type": "truth_table_manual", "rows": 4, "columns": "A B | want C S | got C S" },
+      "unlocks": "HA"
+    },
+    {
+      "n": 7, "chapter": 2, "id": "full_adder", "title": "Full adder", "desc": "Add a carry-in",
+      "status": "designed", "mockup": ["design/FullAdder.dc.html"], "kind": "chips",
+      "inputs": ["A", "B", "Cin"], "outputs": ["S", "Cout"],
+      "sockets": [
+        { "id": "h1", "inputs": ["A", "B"], "outputs": ["S1", "C1"] },
+        { "id": "h2", "inputs": ["S1", "Cin"], "outputs": ["S", "C2"] },
+        { "id": "g", "inputs": ["C1", "C2"], "outputs": ["Cout"] }
+      ],
+      "tray": ["HA", "OR", "AND", "XOR"],
+      "start": { "sockets": { "h1": "HA", "h2": null, "g": null } },
+      "solution": { "h1": "HA", "h2": "HA", "g": "OR" },
+      "alsoAccepted": [{ "g": "XOR", "bonus": "It adds — and XOR works too! (C1 and C2 are never both 1)" }],
+      "test": { "type": "run_all", "cases": 8 },
+      "unlocks": "FA"
+    },
+    {
+      "n": 8, "chapter": 2, "id": "adder4", "title": "4-bit adder", "desc": "Chain four full adders",
+      "status": "designed", "mockup": ["design/Adder4.dc.html"], "kind": "chips_columns",
+      "inputs": ["A[4]", "B[4]"], "outputs": ["S[4]", "Cout"],
+      "sockets": "one per bit (0–3)", "links": "carry link bit k → bit k+1 (k = 0..2); Cin of bit 0 = 0",
+      "tray": ["FA", "HA", "OR"],
+      "start": { "a": 5, "b": 3, "sockets": ["FA", "FA", null, null], "links": [true, false, false] },
+      "solution": { "sockets": ["FA", "FA", "FA", "FA"], "links": [true, true, true] },
+      "alsoAccepted": [{ "sockets[0]": "HA", "bonus": "Bit 0 has no carry-in, so HA is enough there." }],
+      "test": { "type": "exhaustive", "cases": 256, "check": "S + 16*Cout == A + B", "failMessage": "e.g. {a} + {b} gave {got}, want {want}" },
+      "unlocks": "ADD4"
+    },
+    {
+      "n": 9, "chapter": 2, "id": "subtractor", "title": "Subtractor", "desc": "Two's complement",
+      "status": "designed", "mockup": ["design/Subtractor.dc.html"], "kind": "chips_columns",
+      "inputs": ["A[4]", "B[4]"], "outputs": ["R[4]", "Cout"], "fixedParts": ["ADD4"],
+      "sockets": "one per B line (bit 0–3), between B and ADD4", "controls": ["Cin toggle", "Signed view toggle"],
+      "tray": ["NOT", "XOR (2nd pin tied to 1)", "AND"],
+      "start": { "a": 7, "b": 5, "sockets": [null, null, null, "NOT"], "cin": 0 },
+      "solution": { "sockets": ["NOT", "NOT", "NOT", "NOT"], "cin": 1 },
+      "alsoAccepted": [{ "sockets": "XOR anywhere", "bonus": "XOR + a switch = add OR subtract!" }],
+      "test": { "type": "exhaustive", "cases": 256, "check": "R == (A − B) mod 16", "hint": "append '(off by one?)' when Cin = 0" },
+      "unlocks": "SUB4"
+    },
+    { "n": 10, "chapter": 3, "id": "comparator", "title": "Comparator", "status": "not_designed", "expected": "A < B, A = B flags for 4-bit A, B", "test": { "type": "exhaustive", "cases": 256 }, "unlocks": "CMP4" },
+    { "n": 11, "chapter": 3, "id": "seg7", "title": "7-segment decoder", "status": "not_designed", "expected": "digit 0–9 → segments a–g (see Calculator.dc.html MAP)", "test": { "type": "exhaustive", "cases": 10 }, "unlocks": "SEG7" },
+    { "n": 12, "chapter": 3, "id": "alu4", "title": "4-bit ALU", "status": "not_designed", "expected": "op 0 = ADD, op 1 = SUB (XOR on B with op, Cin = op)", "test": { "type": "exhaustive", "cases": 512 }, "unlocks": "ALU4" },
+    { "n": 13, "chapter": 3, "id": "keypad", "title": "Keypad encoder", "status": "not_designed", "expected": "key 0–9 → 4-bit code", "test": { "type": "exhaustive", "cases": 10 }, "unlocks": "KEYENC" },
+    {
+      "n": 14, "chapter": 3, "id": "calculator", "title": "Pocket calculator", "milestone": true,
+      "status": "designed", "mockup": ["design/Calculator.dc.html"], "kind": "milestone",
+      "spec": "8-bit (2 × ALU4), keys 0–9 + − = C ⌫, display sign + 3 digits, OF on overflow",
+      "challenges": [
+        { "expr": "125 + 99", "why": "carries ripple through 8 bits" },
+        { "expr": "42 − 100", "why": "goes negative: no Cout" },
+        { "expr": "200 + 100", "why": "too big for 8 bits" }
+      ],
+      "xray": ["KEYENC (L13)", "Latch A (Ch 4 preview)", "8-bit ALU (L12 ×2)", "CMP4 (L10)", "SEG7 (L11)"]
+    },
+    {
+      "n": 15, "chapter": 4, "id": "sr_latch", "title": "SR latch", "desc": "Remember one bit",
+      "status": "designed", "mockup": ["design/SRLatch.dc.html"], "kind": "sequential",
+      "inputs": ["S (pulse)", "R (pulse)"], "outputs": ["Q", "Q̄"],
+      "sockets": [{ "id": "top", "inputs": ["R", "Q̄ via loop 2"], "outputs": ["Q"] }, { "id": "bot", "inputs": ["Q via loop 1", "S"], "outputs": ["Q̄"] }],
+      "links": ["l1: Q → bottom gate", "l2: Q̄ → top gate"],
+      "tray": ["NOR", "OR", "NAND"],
+      "start": { "top": "NOR", "bot": null, "l1": true, "l2": false },
+      "solution": { "top": "NOR", "bot": "NOR", "l1": true, "l2": true },
+      "pulseMs": 450,
+      "test": { "type": "sequence", "steps": [[0,1,0],[0,0,0],[1,0,1],[0,0,1],[0,0,1],[0,1,0],[0,0,0],[0,0,0],[1,0,1],[0,0,1]], "format": "[S, R, expected Q]" },
+      "warnings": ["S + R held: both outputs 0", "S and R released together: race / oscillation", "no loops: Q forgets"],
+      "unlocks": "LATCH"
+    },
+    { "n": 16, "chapter": 4, "id": "dff", "title": "D flip-flop", "status": "not_designed", "expected": "Q takes D on the rising clock edge only", "test": { "type": "sequence" }, "unlocks": "DFF" },
+    { "n": 17, "chapter": 4, "id": "register", "title": "Register", "status": "not_designed", "expected": "4 DFF sharing a clock and a load enable", "unlocks": "REG4" },
+    { "n": 18, "chapter": 4, "id": "counter", "title": "Counter & clock", "status": "not_designed", "expected": "REG4 + ADD4 (+1) loop", "unlocks": "CNT4" },
+    { "n": 19, "chapter": 4, "id": "ram", "title": "16-byte RAM", "status": "not_designed", "expected": "address decoder + 16 registers", "unlocks": "RAM16" },
+    { "n": 20, "chapter": 5, "id": "pc", "title": "Program counter", "status": "not_designed" },
+    { "n": 21, "chapter": 5, "id": "decoder", "title": "Instruction decoder", "status": "not_designed" },
+    { "n": 22, "chapter": 5, "id": "control", "title": "Control unit", "status": "not_designed" },
+    { "n": 23, "chapter": 5, "id": "datapath", "title": "Datapath", "status": "not_designed" },
+    { "n": 24, "chapter": 5, "id": "first_program", "title": "Run your first program", "milestone": true, "status": "not_designed" }
+  ]
+}

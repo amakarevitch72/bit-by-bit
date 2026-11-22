@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New game: choose your difficulty</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+a{color:#F5B544}a:hover{color:#FFD08A}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column">
+
+  <header style="padding: 16px 12px 4px; display: flex; align-items: center; gap: 8px">
+    <a href="Start.dc.html" aria-label="Back to start" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #C5CCD6">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">NEW GAME</span>
+      <span style="font-size: 16px; font-weight: 600">Choose your difficulty</span>
+    </div>
+  </header>
+
+  <main role="radiogroup" aria-label="Difficulty" style="flex: 1; padding: 8px 20px 0; display: flex; flex-direction: column; gap: 12px">
+    <sc-for list="{{options}}" as="o" hint-placeholder-count="2">
+      <button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="{{o.style}}">
+        <span style="{{o.dotStyle}}"><span style="{{o.innerStyle}}"></span></span>
+        <span style="display: flex; flex-direction: column; gap: 4px; text-align: left">
+          <span style="display: flex; align-items: baseline; gap: 8px">
+            <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: #E8ECF2">{{o.name}}</span>
+            <span style="font-size: 12px; color: #9AA4B2">{{o.tag}}</span>
+          </span>
+          <span style="font-size: 14px; line-height: 1.45; color: #C5CCD6">{{o.body}}</span>
+        </span>
+      </button>
+    </sc-for>
+    <p style="margin: 0; font-size: 12px; color: #9AA4B2">You can still switch any single level to the other mode from its lesson.</p>
+    <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #FFB4A8">Starting a new game erases your saved progress (5 levels done).</p>
+  </main>
+
+  <footer style="padding: 12px 20px 28px">
+    <button onClick="{{ask}}" style="width: 100%; height: 54px; border-radius: 14px; border: none; background: #F5B544; color: #1A1406; font-family: Inter, sans-serif; font-weight: 600; font-size: 17px; cursor: pointer">{{startLabel}}</button>
+  </footer>
+
+  <!-- Confirmation: a new game replaces the saved one -->
+  <sc-if value="{{confirm}}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; background: rgba(5,7,10,0.72); display: flex; align-items: center; justify-content: center; padding: 24px">
+      <div role="alertdialog" aria-label="Erase your progress?" style="width: 100%; padding: 20px; border-radius: 18px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 12px">
+        <span style="font-size: 17px; font-weight: 600">Erase your progress?</span>
+        <span style="font-size: 14px; line-height: 1.45; color: #C5CCD6">Your current game (5 levels done) will be replaced by a new {{choiceName}} game. This can't be undone.</span>
+        <div style="display: flex; justify-content: flex-end; gap: 8px">
+          <button onClick="{{cancel}}" style="height: 44px; padding: 0 14px; border-radius: 10px; border: none; background: transparent; color: #E8ECF2; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer">Keep my game</button>
+          <a href="Main.dc.html" style="height: 44px; padding: 0 14px; border-radius: 10px; color: #FF8A7A; font-size: 14px; font-weight: 600; display: flex; align-items: center; text-decoration: none">Erase and start</a>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { choice: "hard", confirm: false };
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var options = [
+      ["normal", "Normal", "Guided", "The parts are already on the board. You decide how they're wired, or which chip goes in each socket."],
+      ["hard", "Hard", "From scratch", "An empty board and a small box of parts. Place and wire everything yourself. Levels without a Hard version yet play in Normal."]
+    ].map(function (o) {
+      var on = st.choice === o[0];
+      return {
+        on: on, name: o[1], tag: o[2], body: o[3],
+        pick: function () { self.setState({ choice: o[0] }); },
+        style: "display: flex; gap: 14px; align-items: flex-start; padding: 16px; border-radius: 16px; cursor: pointer; font-family: Inter, sans-serif; " +
+          (on ? "background: #1D1A12; border: 2px solid #F5B544;" : "background: #171B22; border: 1px solid #2A3140;"),
+        dotStyle: "flex-shrink: 0; margin-top: 4px; width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid " + (on ? "#F5B544" : "#5B6575"),
+        innerStyle: "width: 10px; height: 10px; border-radius: 50%; background: " + (on ? "#F5B544" : "transparent")
+      };
+    });
+    var name = st.choice === "hard" ? "Hard" : "Normal";
+    return {
+      options: options, choiceName: name, startLabel: "Start " + name + " game",
+      confirm: st.confirm,
+      ask: function () { self.setState({ confirm: true }); },
+      cancel: function () { self.setState({ confirm: false }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Journey map</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+a{color:#F5B544}a:hover{color:#FFD08A}
+</style>
+</helmet>
+<div style="width: 390px; height: 1720px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column">
+
+  <header style="padding: 28px 20px 20px; display: flex; flex-direction: column; gap: 14px; border-bottom: 1px solid #232A36">
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: #4ADE80">BIT BY BIT</span>
+      <button aria-label="Settings" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #2A3140; background: #171B22; color: #9AA4B2; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg>
+      </button>
+    </div>
+    <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 30px; line-height: 1.1; font-weight: 700">From transistor<br>to computer</h1>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; justify-content: space-between; font-size: 14px; color: #9AA4B2">
+        <span>5 of 24 levels</span>
+        <span>Next milestone: <strong style="color: #E8ECF2">Calculator</strong></span>
+      </div>
+      <div style="height: 8px; border-radius: 4px; background: #232A36; overflow: hidden">
+        <div style="width: 21%; height: 100%; background: #4ADE80; border-radius: 4px"></div>
+      </div>
+    </div>
+  </header>
+
+  <main style="flex: 1; padding: 24px 20px 8px; display: flex; flex-direction: column; gap: 28px">
+
+    <!-- Chapter 1 -->
+    <section style="display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 12px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">CHAPTER 1</span>
+          <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700">Logic gates</h2>
+          <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #9AA4B2">Wire transistors into the gates every chip is made of.</p>
+        </div>
+        <span style="flex-shrink: 0; padding: 4px 10px; border-radius: 999px; background: #12301F; color: #4ADE80; font-size: 13px; font-weight: 600">5/5</span>
+      </div>
+      <div style="display: flex; flex-direction: column">
+        <sc-for list="{{ch1}}" as="lv" hint-placeholder-count="5">
+          <div style="display: flex; gap: 14px; align-items: stretch">
+            <div style="width: 44px; display: flex; flex-direction: column; align-items: center">
+              <div style="{{lv.nodeStyle}}">
+                <sc-if value="{{lv.done}}" hint-placeholder-val="{{ true }}">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E1116" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>
+                </sc-if>
+              </div>
+              <div style="{{lv.railStyle}}"></div>
+            </div>
+            <div style="flex: 1; padding: 10px 0 18px; display: flex; justify-content: space-between; gap: 8px">
+              <div style="display: flex; flex-direction: column; gap: 2px">
+                <span style="font-size: 16px; font-weight: 600">{{lv.title}}</span>
+                <span style="font-size: 13px; color: #9AA4B2">{{lv.desc}}</span>
+              </div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4B2">L{{lv.num}}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Chapter 2 -->
+    <section style="display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 12px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #F5B544">CHAPTER 2 · IN PROGRESS</span>
+          <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700">Arithmetic</h2>
+          <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #9AA4B2">Combine your gates until bits can add up.</p>
+        </div>
+        <span style="flex-shrink: 0; padding: 4px 10px; border-radius: 999px; background: #232A36; color: #C5CCD6; font-size: 13px; font-weight: 600">0/4</span>
+      </div>
+      <div style="display: flex; flex-direction: column">
+        <sc-for list="{{ch2}}" as="lv" hint-placeholder-count="4">
+          <div style="display: flex; gap: 14px; align-items: stretch">
+            <div style="width: 44px; display: flex; flex-direction: column; align-items: center">
+              <div style="{{lv.nodeStyle}}">
+                <sc-if value="{{lv.current}}" hint-placeholder-val="{{ false }}">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; color: #0E1116">{{lv.num}}</span>
+                </sc-if>
+                <sc-if value="{{lv.locked}}" hint-placeholder-val="{{ true }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A94A3" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+                </sc-if>
+              </div>
+              <div style="{{lv.railStyle}}"></div>
+            </div>
+            <sc-if value="{{lv.current}}" hint-placeholder-val="{{ false }}">
+              <div style="flex: 1; margin-bottom: 18px; padding: 16px; border-radius: 16px; background: #1D1A12; border: 1.5px solid #F5B544; display: flex; flex-direction: column; gap: 10px">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #F5B544">NEXT UP · L{{lv.num}}</span>
+                <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700">{{lv.title}}</span>
+                <span style="font-size: 14px; line-height: 1.4; color: #C5CCD6">Add two bits using the XOR and AND chips you already built.</span>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap">
+                  <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C5CCD6">uses: XOR</span>
+                  <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C5CCD6">uses: AND</span>
+                </div>
+                <a href="HalfAdder.dc.html" style="margin-top: 4px; height: 48px; border-radius: 12px; background: #F5B544; color: #1A1406; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">Start level
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                </a>
+              </div>
+            </sc-if>
+            <sc-if value="{{lv.locked}}" hint-placeholder-val="{{ true }}">
+              <div style="flex: 1; padding: 10px 0 18px; display: flex; justify-content: space-between; gap: 8px">
+                <div style="display: flex; flex-direction: column; gap: 2px">
+                  <span style="font-size: 16px; font-weight: 600; color: #B4BCC8">{{lv.title}}</span>
+                  <span style="font-size: 13px; color: #8A94A3">{{lv.desc}}</span>
+                </div>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8A94A3">L{{lv.num}}</span>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Locked chapters -->
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <div style="padding: 18px; border-radius: 16px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">CHAPTER 3 · MILESTONE</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A94A3" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+        </div>
+        <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700">Calculator</h2>
+        <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #9AA4B2">Decode digits, build an ALU, wire a keypad — then use the calculator you made.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">10 Comparator</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">11 7-segment decoder</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">12 4-bit ALU</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">13 Keypad encoder</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #2A2414; font-size: 12px; color: #F5B544">14 Pocket calculator ★</span>
+        </div>
+      </div>
+
+      <div style="padding: 18px; border-radius: 16px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">CHAPTER 4</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A94A3" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+        </div>
+        <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700">Memory</h2>
+        <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #9AA4B2">Feed outputs back into inputs so a circuit can remember.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">15 SR latch</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">16 D flip-flop</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">17 Register</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">18 Counter &amp; clock</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">19 16-byte RAM</span>
+        </div>
+      </div>
+
+      <div style="padding: 18px; border-radius: 16px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">CHAPTER 5 · FINAL</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A94A3" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+        </div>
+        <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700">Mini computer</h2>
+        <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #9AA4B2">Assemble a tiny CPU from your own chips and run a program on it.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">20 Program counter</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">21 Instruction decoder</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">22 Control unit</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #232A36; font-size: 12px; color: #B4BCC8">23 Datapath</span>
+          <span style="padding: 4px 8px; border-radius: 6px; background: #2A2414; font-size: 12px; color: #F5B544">24 Run your first program ★</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav aria-label="Main" style="height: 84px; flex-shrink: 0; border-top: 1px solid #232A36; background: #12161C; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr))">
+    <a href="Main.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #F5B544; text-decoration: none; font-size: 12px; font-weight: 600">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"></circle><circle cx="18" cy="5" r="2"></circle><path d="M8 19h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"></path></svg>
+      Journey
+    </a>
+    <a href="Toolbox.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #9AA4B2; text-decoration: none; font-size: 12px; font-weight: 500">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>
+      Chips
+    </a>
+    <a href="Workbench.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #9AA4B2; text-decoration: none; font-size: 12px; font-weight: 500">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"></rect><circle cx="8" cy="8" r="1"></circle><circle cx="12" cy="8" r="1"></circle><circle cx="16" cy="8" r="1"></circle><circle cx="8" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="16" cy="12" r="1"></circle><path d="M8 16h8"></path></svg>
+      Sandbox
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1720}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var GREEN = '#4ADE80', AMBER = '#F5B544';
+    var nodeBase = 'width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-sizing: border-box; ';
+    var railBase = 'width: 3px; flex: 1; min-height: 12px; border-radius: 2px; ';
+    function mk(list, lastRailOff) {
+      return list.map(function (l, i) {
+        var done = l.s === 'done', current = l.s === 'current', locked = l.s === 'locked';
+        var nodeStyle = nodeBase + (done ? 'background: ' + GREEN + ';' : current ? 'background: ' + AMBER + '; box-shadow: 0 0 0 6px rgba(245,181,68,0.18);' : 'background: #171B22; border: 2px solid #2A3140;');
+        var railColor = done ? GREEN : '#2A3140';
+        var railStyle = railBase + 'background: ' + railColor + ';' + (lastRailOff && i === list.length - 1 ? ' opacity: 0;' : '');
+        return { num: l.n, title: l.t, desc: l.d, done: done, current: current, locked: locked, nodeStyle: nodeStyle, railStyle: railStyle };
+      });
+    }
+    return {
+      ch1: mk([
+        { n: 1, t: 'AND gate', d: '2 transistors in series', s: 'done' },
+        { n: 2, t: 'OR gate', d: '2 transistors in parallel', s: 'done' },
+        { n: 3, t: 'NOT gate', d: 'Flip a signal', s: 'done' },
+        { n: 4, t: 'NAND & NOR', d: 'The universal gates', s: 'done' },
+        { n: 5, t: 'XOR gate', d: 'One or the other, not both', s: 'done' }
+      ], false),
+      ch2: mk([
+        { n: 6, t: 'Half adder', d: 'Sum + carry of two bits', s: 'current' },
+        { n: 7, t: 'Full adder', d: 'Add a carry-in', s: 'locked' },
+        { n: 8, t: '4-bit adder', d: 'Chain four full adders', s: 'locked' },
+        { n: 9, t: 'Subtractor', d: 'Two’s complement', s: 'locked' }
+      ], true)
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workbench: full adder</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+a{color:#F5B544}a:hover{color:#FFD08A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column">
+
+  <header style="padding: 16px 12px 4px; display: flex; align-items: center; gap: 8px">
+    <a href="Main.dc.html" aria-label="Back to journey" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #C5CCD6">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">LEVEL 7 · WORKBENCH</span>
+      <span style="font-size: 16px; font-weight: 600">Build a full adder</span>
+    </div>
+    <button aria-label="Hint" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #2A3140; background: #171B22; color: #F5B544; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"></path></svg>
+    </button>
+  </header>
+
+  <main style="flex: 1; padding: 2px 16px 0; display: flex; flex-direction: column; gap: 10px">
+    <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #C5CCD6">Add three bits: A, B and the carry-in <strong style="color: #E8ECF2">Cin</strong> from the column before.</p>
+
+    <!-- Board -->
+    <div style="position: relative; height: 256px; border-radius: 18px; background-color: #12161C; border: 1px solid #232A36; background-image: radial-gradient(#232A36 1px, transparent 1px); background-size: 16px 16px; overflow: hidden">
+      <svg width="358" height="256" viewBox="0 0 358 256" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+        <!-- Inputs -->
+        <text x="8" y="41" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700">A</text>
+        <circle cx="34" cy="36" r="7" fill="{{inA}}"></circle>
+        <line x1="41" y1="36" x2="84" y2="36" stroke="{{inA}}" stroke-width="3"></line>
+        <text x="8" y="81" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700">B</text>
+        <circle cx="34" cy="76" r="7" fill="{{inB}}"></circle>
+        <line x1="41" y1="76" x2="84" y2="76" stroke="{{inB}}" stroke-width="3"></line>
+        <text x="2" y="195" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700">Cin</text>
+        <circle cx="34" cy="190" r="7" fill="{{inC}}"></circle>
+        <line x1="41" y1="190" x2="60" y2="190" stroke="{{inC}}" stroke-width="3"></line>
+        <line x1="60" y1="190" x2="60" y2="168" stroke="{{inC}}" stroke-width="3"></line>
+        <line x1="60" y1="168" x2="170" y2="168" stroke="{{inC}}" stroke-width="3"></line>
+        <!-- S1: HA1 top -> HA2 top -->
+        <line x1="144" y1="36" x2="158" y2="36" stroke="{{wS1}}" stroke-width="3" stroke-dasharray="{{dS1}}"></line>
+        <line x1="158" y1="36" x2="158" y2="128" stroke="{{wS1}}" stroke-width="3" stroke-dasharray="{{dS1}}"></line>
+        <line x1="158" y1="128" x2="170" y2="128" stroke="{{wS1}}" stroke-width="3" stroke-dasharray="{{dS1}}"></line>
+        <!-- C1: HA1 bottom -> combiner top -->
+        <line x1="144" y1="76" x2="244" y2="76" stroke="{{wC1}}" stroke-width="3" stroke-dasharray="{{dC1}}"></line>
+        <line x1="244" y1="76" x2="244" y2="208" stroke="{{wC1}}" stroke-width="3" stroke-dasharray="{{dC1}}"></line>
+        <line x1="244" y1="208" x2="252" y2="208" stroke="{{wC1}}" stroke-width="3" stroke-dasharray="{{dC1}}"></line>
+        <!-- C2: HA2 bottom -> combiner bottom -->
+        <line x1="230" y1="168" x2="236" y2="168" stroke="{{wC2}}" stroke-width="3" stroke-dasharray="{{dC2}}"></line>
+        <line x1="236" y1="168" x2="236" y2="232" stroke="{{wC2}}" stroke-width="3" stroke-dasharray="{{dC2}}"></line>
+        <line x1="236" y1="232" x2="252" y2="232" stroke="{{wC2}}" stroke-width="3" stroke-dasharray="{{dC2}}"></line>
+        <!-- S out -->
+        <line x1="230" y1="128" x2="320" y2="128" stroke="{{wS}}" stroke-width="3" stroke-dasharray="{{dS}}"></line>
+        <circle cx="334" cy="128" r="15" fill="{{glowS}}"></circle>
+        <circle cx="334" cy="128" r="9" fill="{{ledS}}" stroke="#5B6575" stroke-width="2"></circle>
+        <text x="329" y="160" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">S</text>
+        <!-- Cout -->
+        <line x1="302" y1="220" x2="320" y2="220" stroke="{{wCo}}" stroke-width="3" stroke-dasharray="{{dCo}}"></line>
+        <circle cx="334" cy="220" r="15" fill="{{glowCo}}"></circle>
+        <circle cx="334" cy="220" r="9" fill="{{ledCo}}" stroke="#5B6575" stroke-width="2"></circle>
+        <text x="314" y="196" fill="#E8ECF2" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700">Cout</text>
+      </svg>
+      <button onClick="{{place1}}" aria-label="{{label1}}" style="{{sock1}}">{{sym1}}</button>
+      <button onClick="{{place2}}" aria-label="{{label2}}" style="{{sock2}}">{{sym2}}</button>
+      <button onClick="{{place3}}" aria-label="{{label3}}" style="{{sock3}}">{{sym3}}</button>
+    </div>
+
+    <!-- Chip tray -->
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; color: #9AA4B2">{{trayHint}}</span>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{tray}}" as="t" hint-placeholder-count="4">
+          <button onClick="{{t.pick}}" aria-pressed="{{t.selected}}" style="{{t.style}}">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700">{{t.sym}}</span>
+            <span style="font-size: 11px; color: #9AA4B2">{{t.name}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- Inputs + result -->
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+      <button onClick="{{toggleA}}" aria-pressed="{{a}}" style="{{btnA}}">
+        <span style="font-size: 12px; color: #9AA4B2">A</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700">{{aVal}}</span>
+      </button>
+      <button onClick="{{toggleB}}" aria-pressed="{{b}}" style="{{btnB}}">
+        <span style="font-size: 12px; color: #9AA4B2">B</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700">{{bVal}}</span>
+      </button>
+      <button onClick="{{toggleC}}" aria-pressed="{{c}}" style="{{btnC}}">
+        <span style="font-size: 12px; color: #9AA4B2">Cin</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700">{{cVal}}</span>
+      </button>
+      <div role="status" style="height: 60px; border-radius: 14px; background: #12161C; border: 2px solid #2A3140; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+        <span style="font-size: 12px; color: #9AA4B2">Cout S</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700">{{resultText}}</span>
+      </div>
+    </div>
+
+    <!-- Truth table: 8 rows as tiles -->
+    <div style="padding: 10px; border-radius: 14px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 13px; font-weight: 600">Truth table · {{passCount}}/8</span>
+          <span style="font-size: 11px; color: #9AA4B2">A B Cin → Cout S</span>
+        </div>
+        <button onClick="{{runAll}}" disabled="{{cantRun}}" style="{{runStyle}}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5v14l12-7z"></path></svg>
+          Run all 8
+        </button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+          <div style="{{r.cellStyle}}">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700">{{r.abc}}</span>
+            <span style="{{r.gotStyle}}">→ {{r.got}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </main>
+
+  <footer style="padding: 10px 16px 22px">
+    <sc-if value="{{allPass}}" hint-placeholder-val="{{ false }}">
+      <a href="Main.dc.html" style="height: 54px; border-radius: 14px; background: #4ADE80; color: #0B2414; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>
+        {{passText}}
+      </a>
+    </sc-if>
+    <sc-if value="{{notPass}}" hint-placeholder-val="{{ true }}">
+      <button disabled style="{{waitStyle}}">{{waitText}}</button>
+    </sc-if>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { a: false, b: false, c: false, h1: 'HA', h2: null, g: null, sel: null, tested: {} };
+  }
+  gate(g, x, y) {
+    if (g === 'XOR') return x !== y;
+    if (g === 'AND') return x && y;
+    if (g === 'OR') return x || y;
+    return null;
+  }
+  chip(g, x, y) {
+    if (!g) return null;
+    if (g === 'HA') return { top: x !== y, bot: x && y };
+    return { top: this.gate(g, x, y), bot: false };
+  }
+  sim(st, a, b, c) {
+    var u1 = this.chip(st.h1, a, b);
+    var u2 = u1 ? this.chip(st.h2, u1.top, c) : null;
+    var u3 = (u1 && u2) ? this.chip(st.g, u1.bot, u2.bot) : null;
+    return {
+      s1: u1 ? u1.top : null, c1: u1 ? u1.bot : null,
+      s: u2 ? u2.top : null, c2: u2 ? u2.bot : null,
+      co: u3 ? u3.top : null
+    };
+  }
+  ready(st) { return !!(st.h1 && st.h2 && st.g); }
+  key(a, b, c) { return (a ? '1' : '0') + (b ? '1' : '0') + (c ? '1' : '0'); }
+  record(st) {
+    var tested = Object.assign({}, st.tested);
+    if (this.ready(st)) {
+      var r = this.sim(st, st.a, st.b, st.c);
+      tested[this.key(st.a, st.b, st.c)] = { s: r.s, co: r.co };
+    }
+    return tested;
+  }
+  flip(w) {
+    var st = Object.assign({}, this.state);
+    st[w] = !st[w];
+    st.tested = this.record(st);
+    this.setState(st);
+  }
+  place(slot) {
+    var st = Object.assign({}, this.state);
+    if (st.sel) { st[slot] = st.sel; st.sel = null; }
+    else if (st[slot]) { st[slot] = null; }
+    else { return; }
+    st.tested = {};
+    st.tested = this.record(st);
+    this.setState(st);
+  }
+  runAll() {
+    var st = this.state;
+    if (!this.ready(st)) return;
+    var tested = {};
+    for (var i = 0; i < 8; i++) {
+      var a = !!(i & 4), b = !!(i & 2), c = !!(i & 1);
+      var r = this.sim(st, a, b, c);
+      tested[this.key(a, b, c)] = { s: r.s, co: r.co };
+    }
+    this.setState({ tested: tested });
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var HIGH = '#4ADE80', LOW = '#3A4352';
+    var SYM = { HA: 'HA', XOR: '=1', AND: '&', OR: '≥1' };
+    var a = !!st.a, b = !!st.b, c = !!st.c;
+    var r = this.sim(st, a, b, c);
+    function w(v) { return v ? HIGH : LOW; }
+    function d(v) { return v === null ? '5 5' : 'none'; }
+
+    function sock(left, top, wd, ht, chip, name) {
+      var base = 'position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + wd + 'px; height: ' + ht + 'px; box-sizing: border-box; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: JetBrains Mono, monospace; font-size: 18px; font-weight: 700; cursor: pointer; padding: 0; ';
+      if (chip) return base + 'background: #171B22; border: 2px solid #4ADE80; color: #E8ECF2;';
+      if (st.sel) return base + 'background: #1D1A12; border: 2px dashed #F5B544; color: #F5B544;';
+      return base + 'background: #12161C; border: 2px dashed #5B6575; color: #8A94A3;';
+    }
+    function ioBtn(on) {
+      return 'height: 60px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; font-family: Inter, sans-serif; color: #E8ECF2; ' +
+        (on ? 'background: #12301F; border: 2px solid #4ADE80;' : 'background: #171B22; border: 2px solid #2A3140;');
+    }
+    function lbl(name, chip) { return chip ? name + ': ' + chip + ' chip. Tap to remove' : 'Empty ' + name; }
+
+    var tray = ['HA', 'OR', 'AND', 'XOR'].map(function (g) {
+      var selected = st.sel === g;
+      return {
+        sym: SYM[g], name: g === 'HA' ? 'Half adder' : g, selected: selected,
+        pick: function () { self.setState({ sel: selected ? null : g }); },
+        style: 'height: 54px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; font-family: Inter, sans-serif; color: #E8ECF2; ' +
+          (selected ? 'background: #1D1A12; border: 2px solid #F5B544;' : 'background: #171B22; border: 2px solid #2A3140;')
+      };
+    });
+
+    var tested = st.tested || {};
+    var pass = 0, anyBad = false;
+    var nowKey = this.key(a, b, c);
+    var rows = [];
+    for (var i = 0; i < 8; i++) {
+      var ka = !!(i & 4), kb = !!(i & 2), kc = !!(i & 1);
+      var k = this.key(ka, kb, kc);
+      var sum = (ka ? 1 : 0) + (kb ? 1 : 0) + (kc ? 1 : 0);
+      var want = (sum >= 2 ? '1' : '0') + (sum % 2 ? '1' : '0');
+      var t = tested[k];
+      var got = t ? (t.co ? '1' : '0') + (t.s ? '1' : '0') : '··';
+      var ok = !!t && got === want, bad = !!t && got !== want;
+      if (ok) pass++;
+      if (bad) anyBad = true;
+      var isNow = k === nowKey;
+      rows.push({
+        abc: k[0] + k[1] + k[2], got: got,
+        gotStyle: 'font-family: JetBrains Mono, monospace; font-size: 12px; ' + (ok ? 'color: #4ADE80; font-weight: 700' : bad ? 'color: #FF8A7A; font-weight: 700' : 'color: #9AA4B2'),
+        cellStyle: 'padding: 6px 0; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 2px; box-sizing: border-box; ' +
+          (isNow ? 'background: #1D1A12; border: 1.5px solid #F5B544;' : ok ? 'background: #12301F; border: 1.5px solid transparent;' : bad ? 'background: #2A1715; border: 1.5px solid transparent;' : 'background: #12161C; border: 1.5px solid transparent;')
+      });
+    }
+    var allPass = pass === 8;
+    var ready = this.ready(st);
+    var waitText = !ready ? 'Fill all three sockets to power the board'
+      : anyBad ? 'Some rows are wrong — swap a chip' : 'Flip inputs or tap Run all 8';
+
+    return {
+      a: a, b: b, c: c, aVal: a ? '1' : '0', bVal: b ? '1' : '0', cVal: c ? '1' : '0',
+      inA: w(a), inB: w(b), inC: w(c),
+      wS1: w(r.s1), dS1: d(r.s1), wC1: w(r.c1), dC1: d(r.c1),
+      wC2: w(r.c2), dC2: d(r.c2), wS: w(r.s), dS: d(r.s), wCo: w(r.co), dCo: d(r.co),
+      ledS: r.s ? HIGH : '#232A36', ledCo: r.co ? HIGH : '#232A36',
+      glowS: r.s ? 'rgba(74,222,128,0.25)' : 'transparent', glowCo: r.co ? 'rgba(74,222,128,0.25)' : 'transparent',
+      sym1: st.h1 ? SYM[st.h1] : '+', sym2: st.h2 ? SYM[st.h2] : '+', sym3: st.g ? SYM[st.g] : '+',
+      sock1: sock(84, 20, 60, 72, st.h1), sock2: sock(170, 112, 60, 72, st.h2), sock3: sock(252, 196, 50, 48, st.g),
+      label1: lbl('First socket', st.h1), label2: lbl('Second socket', st.h2), label3: lbl('Carry socket', st.g),
+      place1: function () { self.place('h1'); }, place2: function () { self.place('h2'); }, place3: function () { self.place('g'); },
+      tray: tray,
+      trayHint: st.sel ? 'NOW TAP A SOCKET ON THE BOARD' : 'YOUR CHIPS — TAP ONE, THEN A SOCKET',
+      btnA: ioBtn(a), btnB: ioBtn(b), btnC: ioBtn(c),
+      toggleA: function () { self.flip('a'); }, toggleB: function () { self.flip('b'); }, toggleC: function () { self.flip('c'); },
+      resultText: r.co === null || r.s === null ? '? ?' : (r.co ? '1' : '0') + ' ' + (r.s ? '1' : '0'),
+      runAll: function () { self.runAll(); }, cantRun: !ready,
+      runStyle: 'height: 44px; padding: 0 12px; border-radius: 10px; display: flex; align-items: center; gap: 6px; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; ' +
+        (ready ? 'background: #F5B544; color: #1A1406; border: none; cursor: pointer;' : 'background: #1F2530; color: #8A94A3; border: 1px solid #2A3140;'),
+      rows: rows, passCount: pass, allPass: allPass, notPass: !allPass,
+      passText: st.g === 'XOR' ? 'It adds — and XOR works too! Unlock FA' : 'It adds! Unlock the FA chip',
+      waitText: waitText,
+      waitStyle: 'width: 100%; height: 54px; border-radius: 14px; font-family: Inter, sans-serif; font-weight: 600; font-size: 15px; ' +
+        (anyBad ? 'background: #2A1715; border: 1px solid #6B2C25; color: #FFB4A8;' : 'background: #1F2530; border: 1px solid #2A3140; color: #B4BCC8;')
+    };
+  }
+}
+</script>
+</body>
+</html>

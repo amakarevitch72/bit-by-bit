@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workbench: subtractor</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+a{color:#F5B544}a:hover{color:#FFD08A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column">
+
+  <header style="padding: 16px 12px 4px; display: flex; align-items: center; gap: 8px">
+    <a href="Main.dc.html" aria-label="Back to journey" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #C5CCD6">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #9AA4B2">LEVEL 9 · WORKBENCH</span>
+      <span style="font-size: 16px; font-weight: 600">Subtract with an adder</span>
+    </div>
+    <button aria-label="Hint" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #2A3140; background: #171B22; color: #F5B544; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"></path></svg>
+    </button>
+  </header>
+
+  <main style="flex: 1; padding: 2px 16px 0; display: flex; flex-direction: column; gap: 10px">
+
+    <!-- Readout -->
+    <div style="padding: 10px 12px; border-radius: 14px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 6px">
+      <div role="status" style="display: grid; grid-template-columns: repeat(5, auto); justify-content: space-between; align-items: end">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 2px">
+          <span style="font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700">{{aDisp}}</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4B2">{{aBin}}</span>
+        </div>
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; color: #9AA4B2; padding-bottom: 18px">−</span>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 2px">
+          <span style="font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700">{{bDisp}}</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4B2">{{bBin}}</span>
+        </div>
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; color: #9AA4B2; padding-bottom: 18px">=</span>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 2px">
+          <span style="{{rStyle}}">{{rDisp}}</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4B2">{{rBin}}</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid #232A36; padding-top: 6px">
+        <span style="font-size: 12px; line-height: 1.35; color: #9AA4B2">{{modeNote}}</span>
+        <button onClick="{{toggleSigned}}" aria-pressed="{{signed}}" style="{{signedStyle}}">± Signed</button>
+      </div>
+    </div>
+
+    <!-- Board -->
+    <div style="position: relative; height: 312px; border-radius: 18px; background-color: #12161C; border: 1px solid #232A36; background-image: radial-gradient(#232A36 1px, transparent 1px); background-size: 16px 16px; overflow: hidden">
+      <span style="position: absolute; left: 14px; top: 34px; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700">A</span>
+      <span style="position: absolute; left: 14px; top: 82px; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700">B</span>
+
+      <sc-for list="{{cols}}" as="c" hint-placeholder-count="4">
+        <span style="{{c.headStyle}}">{{c.weight}}</span>
+        <button onClick="{{c.toggleA}}" aria-pressed="{{c.aOn}}" aria-label="{{c.aLabel}}" style="{{c.aStyle}}">{{c.aVal}}</button>
+        <button onClick="{{c.toggleB}}" aria-pressed="{{c.bOn}}" aria-label="{{c.bLabel}}" style="{{c.bStyle}}">{{c.bVal}}</button>
+        <div style="{{c.bWire}}"></div>
+        <button onClick="{{c.place}}" aria-label="{{c.sockLabel}}" style="{{c.sockStyle}}">{{c.sym}}</button>
+        <div style="{{c.bpWire}}"></div>
+        <div style="{{c.outWire}}"></div>
+        <div style="{{c.ledStyle}}"></div>
+        <span style="{{c.ledLabel}}">R{{c.bit}}</span>
+      </sc-for>
+
+      <!-- ADD chip -->
+      <div style="position: absolute; left: 44px; top: 180px; width: 248px; height: 60px; box-sizing: border-box; border-radius: 12px; background: #171B22; border: 2px solid #4ADE80; display: flex; align-items: center; justify-content: center; gap: 8px">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700">ADD</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4B2">4-bit · your chip</span>
+      </div>
+
+      <!-- Cin -->
+      <div style="{{cinWire}}"></div>
+      <button onClick="{{toggleCin}}" aria-pressed="{{cin}}" aria-label="Carry-in" style="{{cinStyle}}">
+        <span style="font-size: 10px; color: #9AA4B2">Cin</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700">{{cinVal}}</span>
+      </button>
+
+      <!-- Cout -->
+      <div style="{{coutWire}}"></div>
+      <div style="{{coutLed}}"></div>
+      <span style="position: absolute; left: 4px; top: 226px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #C5CCD6">Cout</span>
+    </div>
+
+    <!-- Chip tray -->
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; color: #9AA4B2">{{trayHint}}</span>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{tray}}" as="t" hint-placeholder-count="3">
+          <button onClick="{{t.pick}}" aria-pressed="{{t.selected}}" style="{{t.style}}">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700">{{t.sym}}</span>
+            <span style="font-size: 11px; color: #9AA4B2">{{t.name}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- Test suite -->
+    <div style="padding: 10px 12px; border-radius: 14px; background: #171B22; border: 1px solid #2A3140; display: flex; align-items: center; gap: 12px">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+        <span style="font-size: 13px; font-weight: 600">{{testTitle}}</span>
+        <span style="{{testDetailStyle}}">{{testDetail}}</span>
+      </div>
+      <button onClick="{{runAll}}" disabled="{{cantRun}}" style="{{runStyle}}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5v14l12-7z"></path></svg>
+        Test all 256
+      </button>
+    </div>
+  </main>
+
+  <footer style="padding: 10px 16px 22px">
+    <sc-if value="{{allPass}}" hint-placeholder-val="{{ false }}">
+      <a href="Main.dc.html" style="height: 54px; border-radius: 14px; background: #4ADE80; color: #0B2414; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>
+        {{passText}}
+      </a>
+    </sc-if>
+    <sc-if value="{{notPass}}" hint-placeholder-val="{{ true }}">
+      <button disabled style="{{waitStyle}}">{{waitText}}</button>
+    </sc-if>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { a: 7, b: 5, socks: [null, null, null, 'NOT'], cin: false, signed: false, sel: null, test: null };
+  }
+  bPrime(st, b) {
+    var out = 0;
+    for (var k = 0; k < 4; k++) {
+      var g = st.socks[k], bk = !!(b & (1 << k)), v;
+      if (!g) return null;
+      if (g === 'NOT' || g === 'XOR') v = !bk;
+      else v = bk;
+      if (v) out |= (1 << k);
+    }
+    return out;
+  }
+  sim(st, a, b) {
+    var bp = this.bPrime(st, b);
+    if (bp === null) return null;
+    var s = a + bp + (st.cin ? 1 : 0);
+    return { r: s & 15, co: s > 15, bp: bp };
+  }
+  ready(st) { return st.socks.every(function (x) { return !!x; }); }
+  place(k) {
+    var socks = this.state.socks.slice();
+    if (this.state.sel) { socks[k] = this.state.sel; this.setState({ socks: socks, sel: null, test: null }); }
+    else if (socks[k]) { socks[k] = null; this.setState({ socks: socks, test: null }); }
+  }
+  runAll() {
+    var st = this.state;
+    if (!this.ready(st)) return;
+    var pass = 0, fail = null;
+    for (var a = 0; a < 16; a++) {
+      for (var b = 0; b < 16; b++) {
+        var r = this.sim(st, a, b).r;
+        if (r === ((a - b) & 15)) pass++;
+        else if (!fail) fail = { a: a, b: b, got: r };
+      }
+    }
+    this.setState({ test: { pass: pass, fail: fail } });
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var HIGH = '#4ADE80', LOW = '#3A4352';
+    var SYM = { NOT: '1○', XOR: '=1', AND: '&' };
+    var a = st.a, b = st.b, signed = !!st.signed;
+    var ready = this.ready(st);
+    var res = ready ? this.sim(st, a, b) : null;
+    function bin(n) { var s = n.toString(2); while (s.length < 4) s = '0' + s; return s; }
+    function sv(n) { return signed && n > 7 ? n - 16 : n; }
+    function fmt(n) { var v = sv(n); return v < 0 ? '−' + (-v) : '' + v; }
+    function X(k) { return 44 + (3 - k) * 64; }
+    function onOff(on) { return on ? 'background: #12301F; border: 2px solid #4ADE80;' : 'background: #171B22; border: 2px solid #2A3140;'; }
+    var bitBtn = 'position: absolute; width: 56px; height: 40px; box-sizing: border-box; border-radius: 10px; font-family: JetBrains Mono, monospace; font-size: 17px; font-weight: 700; cursor: pointer; color: #E8ECF2; padding: 0; ';
+
+    var cols = [3, 2, 1, 0].map(function (k) {
+      var x = X(k), aOn = !!(a & (1 << k)), bOn = !!(b & (1 << k)), g = st.socks[k];
+      var bpv = !g ? null : (g === 'NOT' || g === 'XOR') ? !bOn : bOn;
+      var rv = res ? !!(res.r & (1 << k)) : null;
+      var sockBase = 'position: absolute; left: ' + (x + 6) + 'px; top: 124px; width: 44px; height: 40px; box-sizing: border-box; border-radius: 9px; font-family: JetBrains Mono, monospace; font-size: 14px; font-weight: 700; cursor: pointer; padding: 0; ';
+      var weight = (signed && k === 3) ? '−8' : '' + (1 << k);
+      return {
+        bit: k, weight: weight, aOn: aOn, bOn: bOn, aVal: aOn ? '1' : '0', bVal: bOn ? '1' : '0',
+        sym: g ? SYM[g] : '+',
+        aLabel: 'A bit ' + k, bLabel: 'B bit ' + k,
+        sockLabel: g ? 'B bit ' + k + ' socket: ' + g + '. Tap to remove' : 'Empty B bit ' + k + ' socket',
+        headStyle: 'position: absolute; left: ' + x + 'px; top: 6px; width: 56px; text-align: center; font-family: JetBrains Mono, monospace; font-size: 11px; color: ' + (signed && k === 3 ? '#F5B544' : '#9AA4B2'),
+        aStyle: bitBtn + 'left: ' + x + 'px; top: 24px; ' + onOff(aOn),
+        bStyle: bitBtn + 'left: ' + x + 'px; top: 72px; ' + onOff(bOn),
+        bWire: 'position: absolute; left: ' + (x + 27) + 'px; top: 112px; width: 3px; height: 12px; background: ' + (bOn ? HIGH : LOW),
+        sockStyle: g ? sockBase + 'background: #171B22; border: 2px solid #4ADE80; color: #E8ECF2;'
+          : st.sel ? sockBase + 'background: #1D1A12; border: 2px dashed #F5B544; color: #F5B544;'
+          : sockBase + 'background: #12161C; border: 2px dashed #5B6575; color: #8A94A3;',
+        bpWire: 'position: absolute; left: ' + (x + 27) + 'px; top: 164px; width: 3px; height: 16px; background: ' + (bpv ? HIGH : LOW) + (bpv === null ? '; opacity: 0.4' : ''),
+        outWire: 'position: absolute; left: ' + (x + 27) + 'px; top: 240px; width: 3px; height: 26px; background: ' + (rv ? HIGH : LOW) + (rv === null ? '; opacity: 0.4' : ''),
+        ledStyle: 'position: absolute; left: ' + (x + 18) + 'px; top: 264px; width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2px solid #5B6575; background: ' + (rv ? HIGH : '#232A36') + (rv ? '; box-shadow: 0 0 0 5px rgba(74,222,128,0.22)' : ''),
+        ledLabel: 'position: absolute; left: ' + (x + 16) + 'px; top: 290px; width: 26px; text-align: center; font-family: JetBrains Mono, monospace; font-size: 11px; color: #C5CCD6',
+        toggleA: function () { self.setState({ a: a ^ (1 << k) }); },
+        toggleB: function () { self.setState({ b: b ^ (1 << k) }); },
+        place: function () { self.place(k); }
+      };
+    });
+
+    var tray = ['NOT', 'XOR', 'AND'].map(function (g) {
+      var selected = st.sel === g;
+      return {
+        sym: SYM[g], name: g === 'XOR' ? 'XOR (2nd pin = 1)' : g, selected: selected,
+        pick: function () { self.setState({ sel: selected ? null : g }); },
+        style: 'height: 54px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; font-family: Inter, sans-serif; color: #E8ECF2; ' +
+          (selected ? 'background: #1D1A12; border: 2px solid #F5B544;' : 'background: #171B22; border: 2px solid #2A3140;')
+      };
+    });
+
+    var co = res ? res.co : null;
+    var want = (a - b) & 15;
+    var wrongNow = res && res.r !== want;
+    var t = st.test;
+    var allPass = !!t && t.pass === 256;
+    var usedXor = st.socks.some(function (g) { return g === 'XOR'; });
+    var testDetail = !ready ? 'Fill all four B sockets first'
+      : !t ? 'Every A − B from 0 − 0 to 15 − 15'
+      : allPass ? 'Perfect: flip every bit of B, add 1, then add.'
+      : 'e.g. ' + t.fail.a + ' − ' + t.fail.b + ' gave ' + t.fail.got + ', want ' + ((t.fail.a - t.fail.b) & 15) + (st.cin ? '' : ' (off by one?)');
+
+    return {
+      aDisp: fmt(a), bDisp: fmt(b), aBin: bin(a), bBin: bin(b),
+      rDisp: res ? fmt(res.r) : '?', rBin: res ? bin(res.r) : '????',
+      rStyle: 'font-family: Space Grotesk, sans-serif; font-size: 26px; font-weight: 700; color: ' + (!res ? '#9AA4B2' : wrongNow ? '#FF8A7A' : '#4ADE80'),
+      signed: signed,
+      toggleSigned: function () { self.setState({ signed: !signed }); },
+      signedStyle: 'height: 44px; padding: 0 12px; flex-shrink: 0; border-radius: 10px; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; ' +
+        (signed ? 'background: #1D1A12; border: 2px solid #F5B544; color: #F5B544;' : 'background: #12161C; border: 2px solid #2A3140; color: #C5CCD6;'),
+      modeNote: signed ? 'Signed: the top bit counts as −8, so 1110 = −2.' : 'Unsigned: Cout = 0 means A was smaller and the result wrapped around.',
+      cols: cols, tray: tray,
+      trayHint: st.sel ? 'NOW TAP A B-LINE SOCKET' : 'GOAL: A − B = A + (flipped B) + 1',
+      cin: !!st.cin, cinVal: st.cin ? '1' : '0',
+      toggleCin: function () { self.setState({ cin: !st.cin, test: null }); },
+      cinWire: 'position: absolute; left: 292px; top: 209px; width: 12px; height: 3px; background: ' + (st.cin ? HIGH : LOW),
+      cinStyle: 'position: absolute; left: 304px; top: 186px; width: 48px; height: 48px; box-sizing: border-box; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; cursor: pointer; padding: 0; color: #E8ECF2; font-family: Inter, sans-serif; ' +
+        (st.cin ? 'background: #12301F; border: 2px solid #4ADE80;' : 'background: #1D1A12; border: 2px dashed #F5B544;'),
+      coutWire: 'position: absolute; left: 30px; top: 209px; width: 14px; height: 3px; background: ' + (co ? HIGH : LOW),
+      coutLed: 'position: absolute; left: 10px; top: 200px; width: 20px; height: 20px; box-sizing: border-box; border-radius: 50%; border: 2px solid #5B6575; background: ' + (co ? HIGH : '#232A36'),
+      runAll: function () { self.runAll(); }, cantRun: !ready,
+      runStyle: 'height: 44px; padding: 0 12px; border-radius: 10px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; ' +
+        (ready ? 'background: #F5B544; color: #1A1406; border: none; cursor: pointer;' : 'background: #1F2530; color: #8A94A3; border: 1px solid #2A3140;'),
+      testTitle: !t ? 'Test suite' : t.pass + '/256 differences correct',
+      testDetail: testDetail,
+      testDetailStyle: 'font-size: 12px; line-height: 1.35; color: ' + (t && !allPass ? '#FFB4A8' : allPass ? '#4ADE80' : '#9AA4B2'),
+      allPass: allPass, notPass: !allPass,
+      passText: usedXor ? 'XOR + a switch = add OR subtract!' : 'Unlock the SUB chip',
+      waitText: !ready ? 'Put a chip on every B line' : !t ? 'Run the test suite to finish' : 'Fix the circuit and test again',
+      waitStyle: 'width: 100%; height: 54px; border-radius: 14px; font-family: Inter, sans-serif; font-weight: 600; font-size: 15px; ' +
+        (t && !allPass ? 'background: #2A1715; border: 1px solid #6B2C25; color: #FFB4A8;' : 'background: #1F2530; border: 1px solid #2A3140; color: #B4BCC8;')
+    };
+  }
+}
+</script>
+</body>
+</html>
