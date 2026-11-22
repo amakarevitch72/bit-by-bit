@@ -29,7 +29,7 @@ import app.bitbybit.ui.theme.BbType
 
 /** Top bar used by lesson and workbench screens: back, eyebrow + title. */
 @Composable
-fun LevelTopBar(eyebrow: String, title: String, onBack: () -> Unit) {
+fun LevelTopBar(eyebrow: String, title: String, onBack: () -> Unit, trailing: (@Composable () -> Unit)? = null) {
     Row(
         Modifier.fillMaxWidth().padding(start = 4.dp, end = 12.dp, top = 12.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -42,10 +42,11 @@ fun LevelTopBar(eyebrow: String, title: String, onBack: () -> Unit) {
                 .semantics { contentDescription = "Back" },
             contentAlignment = Alignment.Center,
         ) { Text("‹", color = Bb.TextSecondary, fontSize = 28.sp) }
-        Column(Modifier.padding(start = 4.dp)) {
+        Column(Modifier.weight(1f).padding(start = 4.dp)) {
             Text(eyebrow.uppercase(), style = BbType.Eyebrow)
             Text(title, style = BbType.Title)
         }
+        trailing?.invoke()
     }
 }
 

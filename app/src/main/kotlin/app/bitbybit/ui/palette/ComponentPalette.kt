@@ -42,6 +42,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.bitbybit.data.LevelsFile
+import app.bitbybit.ui.circuit.DragPayload
+import app.bitbybit.ui.circuit.DragState
+import app.bitbybit.ui.circuit.dragSource
 import app.bitbybit.ui.screens.unlockIds
 import app.bitbybit.ui.theme.Bb
 import app.bitbybit.ui.theme.BbFonts
@@ -52,7 +55,7 @@ enum class PaletteCategory(val label: String) {
 
     companion object {
         fun of(id: String): PaletteCategory = when (id) {
-            "SWITCH", "LED" -> IO
+            "SWITCH", "LED", "POWER" -> IO
             "TRANSISTOR" -> PARTS
             "AND", "OR", "NOT", "NAND", "NOR", "XOR" -> GATES
             "HA", "FA", "ADD4", "SUB4" -> ARITHMETIC
@@ -82,6 +85,8 @@ fun buildPalette(data: LevelsFile, completed: Set<Int>): List<PaletteItem> {
     val fixed = listOf(
         PaletteItem("SWITCH", "0|1", "Switch", PaletteCategory.IO, true, null),
         PaletteItem("LED", "●", "LED", PaletteCategory.IO, true, null),
+        // Permanent +5V supply. Transistors only conduct when their C pin is wired to power.
+        PaletteItem("POWER", "+5V", "Power", PaletteCategory.IO, true, null),
     )
     val chips = data.chips.map { (id, def) ->
         val level = unlockedBy[id]
@@ -113,6 +118,9 @@ fun ComponentPalette(
     caption: String? = null,
     /** Small line under an available tile, e.g. "2 left" in Hard mode. */
     badge: ((PaletteItem) -> String?)? = null,
+    /** Drag and drop onto a board: long-press an available tile and drag it. Null = tap only. */
+    drag: DragState? = null,
+    onDrop: (DragPayload, Int?) -> Unit = { _, _ -> },
 ) {
     var filter by rememberSaveable { mutableStateOf<PaletteCategory?>(null) }
     val shown = items.filter { !showFilters || filter == null || it.category == filter }
@@ -155,7 +163,7 @@ fun ComponentPalette(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(shown, key = { it.id }) { item ->
-                PaletteTile(item, selected = item.id == selectedId, badge = badge?.invoke(item), onClick = {
+                PaletteTile(item, selected = item.id == selectedId, badge = badge?.invoke(item), drag = drag, onDrop = onDrop, onClick = {
                     if (item.available) onSelect(if (item.id == selectedId) null else item.id)
                 })
             }
@@ -164,7 +172,10 @@ fun ComponentPalette(
 }
 
 @Composable
-private fun PaletteTile(item: PaletteItem, selected: Boolean, badge: String?, onClick: () -> Unit) {
+private fun PaletteTile(
+    item: PaletteItem, selected: Boolean, badge: String?,
+    drag: DragState?, onDrop: (DragPayload, Int?) -> Unit, onClick: () -> Unit,
+) {
     val shape = RoundedCornerShape(12.dp)
     val border = when {
         selected -> Modifier.border(2.dp, Bb.Accent, shape)
@@ -180,6 +191,10 @@ private fun PaletteTile(item: PaletteItem, selected: Boolean, badge: String?, on
         Modifier.width(78.dp).height(100.dp).clip(shape)
             .background(if (selected) Bb.AccentBg else if (item.available) Bb.Surface else Color.Transparent)
             .then(border)
+            .then(
+                if (drag != null && item.available) Modifier.dragSource(drag, payload = { DragPayload.New(item.id, item.symbol) }, onDrop = onDrop)
+                else Modifier,
+            )
             .selectable(selected = selected, enabled = item.available, role = Role.RadioButton, onClick = onClick)
             .semantics {
                 contentDescription = item.name

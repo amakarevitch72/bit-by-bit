@@ -105,19 +105,39 @@ Android SDK and is gitignored.
 - **Two modes per level: Normal and Hard.** The lesson screen offers "Start · Normal" and "Hard mode · build it yourself"
   (when the level is in `HARD_LEVELS`). Either mode completes the level and unlocks the chip; Hard is also saved in
   `ProgressStore.completedHard` and shows a "HARD ★" badge on Journey and "HARD MODE ★" on the completion screen.
-  - Hard mode (`ui/screens/HardWorkbench.kt`) is the shared circuit editor with a goal. It uses a 5×4 board; switches A (cell A1)
-    and B (A4) and the level's output LEDs are fixed and can't be removed. The palette holds only the level's parts, with a count
-    ("Transistor, 2 left"). "Run test" plays every input combination and reads every LED.
-  - Levels with Hard mode: **1, 2** (Transistor ×2, both required, one LED "OUT" at E3) and **6** (one each of
-    AND/OR/NAND/XOR, nothing required, so the player must work out which chips to use; two LEDs, C at E2 and S at E3; the table reads "C S").
+  - Hard mode (`ui/screens/HardWorkbench.kt`) is the shared circuit editor with a goal, drawn as a **live circuit board**
+    (design: `design/HardBoardConcept.dc.html`). Layout, top to bottom: goal → tool bar (**Place / Wire / Probe / Erase**) →
+    5×4 board → action line → palette → **logic analyzer** (waveforms A, B, then "want X" and X per output; ✓/✗ per step;
+    "Run test" button) → one main button. The header shows the live outputs ("OUT 1", or "C 1 · S 0").
+  - Fixed parts that can't be removed: switches A (A1) and B (A4), the output LEDs, and for transistor levels the power input
+    **IN (+5V) at C1**. The palette holds only the level's parts, with a count ("Transistor, 2 left").
+  - Levels with Hard mode: **1, 2** (Transistor ×2, both required, IN at C1, LED "OUT" at E3) and **6** (one each of
+    AND/OR/NAND/XOR, nothing required, so the player must work out which chips to use; no IN; LEDs C at E2 and S at E3).
   - Rules are in `:sim` `HardMode` (tested in `HardModeTest.kt`): every required part must be placed; switches may only
-    drive a transistor's base or a gate input; every LED must be driven by a placed part, never straight from a switch.
-    Without these rules, Level 2 could be passed by wiring both switches straight to the LED. Any change to parts or wires
-    clears old results; flipping a switch doesn't.
+    drive a transistor's base or a gate input; every LED must be driven by a placed part, never straight from a switch or IN;
+    IN must be wired (there is no hidden power). Any change to parts or wires clears old results; flipping a switch doesn't.
   - To add Hard mode to a level, add a `HardLevel` to `HARD_LEVELS`: title, goal, `palette` (id → count), `required`
-    (kind → count, optional), `outputs` (label + cell, in truth-table order) and `target` (inputs → list of LED values).
-- **Shared circuit editor** (`ui/circuit/CircuitEditor.kt`): `EditorState` + pure `Editor.*` functions + the `CircuitBoard`
-  and `EditorActionBar` composables. The Sandbox and Hard mode both use it, so they can't drift apart.
+    (kind → count, optional), `outputs` (label + cell, in analyzer order), `hasPower`, `target` (inputs → list of LED values).
+- **Shared circuit editor.** `ui/circuit/CircuitEditor.kt` holds the state and pure logic (`EditorState`, `Editor.*`, `BoardTool`),
+  unit-tested in `app/src/test/.../EditorTest.kt`. `ui/circuit/CircuitBoard.kt` holds the UI (`CircuitBoard`, `BoardToolBar`,
+  `EditorActionBar`), and `ui/circuit/LogicAnalyzer.kt` the analyzer. The Sandbox and Hard mode both use them, so they can't drift apart.
+  - **Tools:** in PLACE, tap an empty cell to drop the picked part, tap a part to select it, tap a switch to flip it. In WIRE,
+    tap the part a wire starts from (switches don't flip), then the target, then pick the input if there are several.
+    PROBE reads every pin ("Q1 · B 1 · C 1 · E 1") and still flips switches. ERASE removes a part and its wires (fixed parts stay).
+    Picking a palette part switches to PLACE. The Sandbox has no tool bar and stays in PLACE.
+  - **Drag and drop** (`ui/circuit/DragAndDrop.kt`) works in Hard mode and the Sandbox, whatever the tool. It uses
+    long-press, then drag, so a normal swipe still scrolls.
+    - Drag a palette tile onto an empty cell to place it (`Editor.placeAt`, which respects the level's part limits).
+    - Drag a placed part to another cell to move it; its wires follow (`Editor.move`).
+    - Drop a part off the board to remove it (`Editor.dropOff`). Fixed parts can't be picked up.
+    - A `DragGhost` follows the finger ("Drop here" / "Taken" / "Drop to remove"), and the cell under it turns green or red.
+    - Each screen owns one `DragState` (`rememberDragState()`), passes it to `CircuitBoard` and `ComponentPalette`, and draws
+      `DragGhost` last in a root `Box`. Positions are in root coordinates; the board publishes its cell grid via `dropTarget`.
+    - Tested in `EditorTest` (placeAt, move keeps wires and power, taken cells, fixed parts, drop-off). On the emulator,
+      `adb shell input draganddrop x1 y1 x2 y2 2500` performs a long-press drag.
+  - **Board look:** dark PCB with pad dots, gold solder pads, right-angle traces (`trace()`). Lit traces glow and carry
+    moving dashes (green, amber from IN). Transistors are circle NPN symbols whose pins follow the symbol: B left, C top, E bottom.
+    Switches are slide toggles, IN is an amber terminal block, and LEDs glow.
 - **Shared truth table** (`ui/screens/TruthTable.kt`, `WantGotTable`) is used by Normal and Hard workbenches.
 - **Lessons** come from `LESSONS` in `ui/screens/OtherScreens.kt` (a headline, cards, the goal). Journey opens a level's lesson
   when it has one, otherwise the workbench. Level 2's lesson poses the problem without giving the answer away.
@@ -128,8 +148,9 @@ Android SDK and is gitignored.
   tap cells on a 6×5 grid to place it (it stays picked so you can place several), tap a placed part to select or remove it,
   or clear the board.
 - **Sandbox wiring + live simulation.** `:sim` `Circuit` (`Circuit.kt`, tests in `CircuitTest.kt`) runs a netlist of `PartKind`s
-  (SWITCH, LED, TRANSISTOR, AND, OR, NOT, NAND, NOR, XOR, HA, FA). Its rules:
-  - an unconnected input reads 0, except a transistor's collector, which reads 1 (+5V);
+  (SWITCH, POWER, LED, TRANSISTOR, AND, OR, NOT, NAND, NOR, XOR, HA, FA). Its rules:
+  - an unconnected input reads 0, and there is no hidden power: a transistor conducts only if its collector C is wired to
+    something that's on, normally the POWER part (IN, +5V, always 1; also in the Sandbox palette under Inputs & outputs);
   - several wires into one input are joined as OR;
   - feedback loops are allowed and settle within 32 passes, otherwise the result is flagged `oscillating`;
   - passing the previous outputs back in lets latches remember.

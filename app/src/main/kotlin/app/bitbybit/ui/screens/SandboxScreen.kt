@@ -1,5 +1,6 @@
 package app.bitbybit.ui.screens
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.bitbybit.data.LevelsFile
 import app.bitbybit.ui.Routes
 import app.bitbybit.ui.circuit.CircuitBoard
+import app.bitbybit.ui.circuit.DragGhost
+import app.bitbybit.ui.circuit.DragPayload
+import app.bitbybit.ui.circuit.rememberDragState
 import app.bitbybit.ui.circuit.Editor
 import app.bitbybit.ui.circuit.EditorActionBar
 import app.bitbybit.ui.circuit.EditorActions
@@ -50,6 +54,14 @@ class SandboxViewModel : ViewModel() {
         donePlacing = { edit { Editor.pickTool(it, null) } },
     )
     fun clearBoard() = edit(Editor::clear)
+
+    /** Drag and drop: a new part lands on [cell]; a moved part goes to [cell], or is removed when dropped off the board. */
+    fun drop(p: DragPayload, cell: Int?) = edit { s ->
+        when (p) {
+            is DragPayload.New -> if (cell == null) s.copy(message = "Drop the part on the board to place it.") else Editor.placeAt(s, cell, p.id)
+            is DragPayload.Existing -> if (cell == null) Editor.dropOff(s, p.fromCell) else Editor.move(s, p.fromCell, cell)
+        }
+    }
 }
 
 @Composable
@@ -57,28 +69,33 @@ fun SandboxScreen(data: LevelsFile, completed: Set<Int>, onTab: (String) -> Unit
     val s by vm.state.collectAsStateWithLifecycle()
     val palette = remember(data, completed) { buildPalette(data, completed) }
     val byId = remember(palette) { palette.associateBy { it.id } }
+    val drag = rememberDragState()
 
-    Column(Modifier.fillMaxSize()) {
-        Row(
-            Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 12.dp, bottom = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(Modifier.weight(1f)) {
-                Text("SANDBOX", style = BbType.Eyebrow)
-                Text(
-                    if (s.sim?.oscillating == true) "Free build · signals won't settle" else "Free build",
-                    style = BbType.Title.copy(color = if (s.sim?.oscillating == true) Bb.Error else Bb.Text),
-                )
+    // The Box lets the drag ghost float above the whole screen.
+    Box(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize()) {
+            Row(
+                Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 12.dp, bottom = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text("SANDBOX", style = BbType.Eyebrow)
+                    Text(
+                        if (s.sim?.oscillating == true) "Free build · signals won't settle" else "Free build",
+                        style = BbType.Title.copy(color = if (s.sim?.oscillating == true) Bb.Error else Bb.Text),
+                    )
+                }
+                if (s.placed.isNotEmpty()) SmallAction("Clear board", onClick = vm::clearBoard)
             }
-            if (s.placed.isNotEmpty()) SmallAction("Clear board", onClick = vm::clearBoard)
+            CircuitBoard(s, byId, vm::tapCell, Modifier.weight(1f).padding(horizontal = 16.dp), drag = drag, onDrop = vm::drop)
+            EditorActionBar(
+                s, vm.actions,
+                emptyHint = "Long-press a component below and drag it onto the board, or pick it and tap a cell.",
+                idleHint = "Tap a part to wire it, a switch to flip it. Long-press a part to move it.",
+            )
+            ComponentPalette(palette, s.tool, vm::pickTool, drag = drag, onDrop = vm::drop)
+            BottomTabs(selected = Routes.SANDBOX, onTab = onTab)
         }
-        CircuitBoard(s, byId, vm::tapCell, Modifier.weight(1f).padding(horizontal = 16.dp))
-        EditorActionBar(
-            s, vm.actions,
-            emptyHint = "Pick a component below, then tap the board.",
-            idleHint = "Tap a part to wire it. Tap a switch to flip it.",
-        )
-        ComponentPalette(palette, s.tool, vm::pickTool)
-        BottomTabs(selected = Routes.SANDBOX, onTab = onTab)
+        DragGhost(drag, isFree = { cell -> cell !in s.placed || (drag.payload as? DragPayload.Existing)?.fromCell == cell })
     }
 }

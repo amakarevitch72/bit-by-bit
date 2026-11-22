@@ -7,7 +7,8 @@ package app.bitbybit.sim
  * Before the truth table is run, [HardMode.problem] checks the build rules, so a shortcut can't pass:
  * - every required part must be on the board (e.g. both transistors in Levels 1–2),
  * - switches may only drive a part's control input: a transistor's base B, or any gate input — never the LED or a collector,
- * - every LED must be driven by a placed part, never straight from a switch.
+ * - every LED must be driven by a placed part, never straight from a switch (or from the power input IN),
+ * - when the board has a power input IN (+5V), it must be wired up: transistors get no hidden power.
  * Then every input combination is simulated from a clean start and each LED is read.
  */
 data class HardSpec(
@@ -19,6 +20,8 @@ data class HardSpec(
     val required: Map<PartKind, Int>,
     /** Wanted LED values for the given input values, in [leds] order. */
     val target: (List<Boolean>) -> List<Boolean>,
+    /** Cell id of the fixed power input IN (+5V), for levels built from transistors. Null = no power part on the board. */
+    val power: Int? = null,
 ) {
     /** Row keys in table order: "0 0", "0 1", … (input A first). */
     val keys: List<String>
@@ -51,6 +54,10 @@ object HardMode {
         for (led in spec.leds) {
             val drivers = wires.filter { it.toPart == led }
             if (drivers.isEmpty()) return if (spec.leds.size == 1) "Connect something to the LED." else "Connect something to every LED."
+            if (spec.power != null && drivers.any { it.fromPart == spec.power }) return "Don't wire IN straight to the LED: it would always be on."
+        }
+        if (spec.power != null && wires.none { it.fromPart == spec.power }) {
+            return "Wire IN (+5V) to a transistor's C pin. Without power, nothing can light."
         }
         return null
     }

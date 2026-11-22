@@ -9,22 +9,22 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class HardModeTest {
-    // Board: A = cell 0, B = cell 15, LED = cell 14, parts placed at 6 and 11.
-    private val A = 0; private val B = 15; private val OUT = 14; private val Q1 = 6; private val Q2 = 11
-    private val terminals = listOf(CircuitPart(A, SWITCH), CircuitPart(B, SWITCH), CircuitPart(OUT, LED))
+    // Board: A = cell 0, IN (+5V) = cell 5, B = cell 15, LED = cell 14, parts placed at 6 and 11.
+    private val A = 0; private val B = 15; private val OUT = 14; private val Q1 = 6; private val Q2 = 11; private val IN = 5
+    private val terminals = listOf(CircuitPart(A, SWITCH), CircuitPart(B, SWITCH), CircuitPart(OUT, LED), CircuitPart(IN, POWER))
     private val twoQ = terminals + listOf(CircuitPart(Q1, TRANSISTOR), CircuitPart(Q2, TRANSISTOR))
     private fun w(from: Int, to: Int, toPin: Int = 0, fromPin: Int = 0) = CircuitWire(from, fromPin, to, toPin)
 
-    private val andSpec = HardSpec(listOf(A, B), listOf(OUT), mapOf(TRANSISTOR to 2)) { listOf(it[0] && it[1]) }
-    private val orSpec = HardSpec(listOf(A, B), listOf(OUT), mapOf(TRANSISTOR to 2)) { listOf(it[0] || it[1]) }
+    private val andSpec = HardSpec(listOf(A, B), listOf(OUT), mapOf(TRANSISTOR to 2), target = { listOf(it[0] && it[1]) }, power = IN)
+    private val orSpec = HardSpec(listOf(A, B), listOf(OUT), mapOf(TRANSISTOR to 2), target = { listOf(it[0] || it[1]) }, power = IN)
 
     private fun allPass(spec: HardSpec, parts: List<CircuitPart>, wires: List<CircuitWire>): Boolean {
         val rows = HardMode.run(spec, parts, wires) ?: return false
         return rows.all { (k, v) -> v == HardMode.want(spec, k) }
     }
 
-    private val series = listOf(w(A, Q1), w(B, Q2), w(Q1, Q2, 1), w(Q2, OUT))
-    private val parallel = listOf(w(A, Q1), w(B, Q2), w(Q1, OUT), w(Q2, OUT))
+    private val series = listOf(w(IN, Q1, 1), w(A, Q1), w(B, Q2), w(Q1, Q2, 1), w(Q2, OUT))
+    private val parallel = listOf(w(IN, Q1, 1), w(IN, Q2, 1), w(A, Q1), w(B, Q2), w(Q1, OUT), w(Q2, OUT))
 
     @Test fun seriesBuildPassesAnd() = assertTrue(allPass(andSpec, twoQ, series))
     @Test fun parallelBuildPassesOr() = assertTrue(allPass(orSpec, twoQ, parallel))
@@ -48,16 +48,24 @@ class HardModeTest {
     }
 
     @Test fun switchIntoACollectorIsRejected() {
-        val viaCollector = listOf(w(A, Q1), w(B, Q1, 1), w(Q1, OUT))
+        val viaCollector = listOf(w(IN, Q2, 1), w(A, Q1), w(B, Q1, 1), w(Q1, OUT))
         assertEquals("Switches drive a transistor's base (B), not its collector or the LED.", HardMode.problem(andSpec, twoQ, viaCollector))
     }
+
+    @Test fun buildWithoutPowerIsReported() {
+        val noPower = series.filterNot { it.fromPart == IN }
+        assertEquals("Wire IN (+5V) to a transistor's C pin. Without power, nothing can light.", HardMode.problem(andSpec, twoQ, noPower))
+    }
+
+    @Test fun powerStraightToTheLedIsRejected() =
+        assertEquals("Don't wire IN straight to the LED: it would always be on.", HardMode.problem(orSpec, twoQ, parallel + w(IN, OUT)))
 
     @Test fun ledWithNothingConnectedIsReported() =
         assertEquals("Connect something to the LED.", HardMode.problem(andSpec, twoQ, listOf(w(A, Q1), w(B, Q2))))
 
     // ---- Level 6: half adder from chips, two outputs (C at cell 9, S at cell 14) ----
     private val C = 9; private val S = 14; private val G1 = 6; private val G2 = 11
-    private val haSpec = HardSpec(listOf(A, B), listOf(C, S), required = emptyMap()) { listOf(it[0] && it[1], it[0] != it[1]) }
+    private val haSpec = HardSpec(listOf(A, B), listOf(C, S), required = emptyMap(), target = { listOf(it[0] && it[1], it[0] != it[1]) })
     private fun haParts(g1: PartKind, g2: PartKind) = listOf(
         CircuitPart(A, SWITCH), CircuitPart(B, SWITCH), CircuitPart(C, LED), CircuitPart(S, LED),
         CircuitPart(G1, g1), CircuitPart(G2, g2),

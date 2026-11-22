@@ -9,18 +9,19 @@ import kotlin.test.assertTrue
 class CircuitTest {
     private fun sw(id: Int, on: Boolean) = CircuitPart(id, SWITCH, on)
     private fun w(from: Int, to: Int, toPin: Int = 0, fromPin: Int = 0) = CircuitWire(from, fromPin, to, toPin)
+    private val IN = 6 // the power part (+5V)
 
-    /** Level 1 rebuilt by hand: A → Q1.B, B → Q2.B, Q1.E → Q2.C, Q2.E → LED. */
+    /** Level 1 rebuilt by hand: IN → Q1.C, A → Q1.B, B → Q2.B, Q1.E → Q2.C, Q2.E → LED. */
     private fun seriesAnd(a: Boolean, b: Boolean): Boolean {
-        val parts = listOf(sw(1, a), sw(2, b), CircuitPart(3, TRANSISTOR), CircuitPart(4, TRANSISTOR), CircuitPart(5, LED))
-        val wires = listOf(w(1, 3, 0), w(2, 4, 0), w(3, 4, 1), w(4, 5))
+        val parts = listOf(sw(1, a), sw(2, b), CircuitPart(3, TRANSISTOR), CircuitPart(4, TRANSISTOR), CircuitPart(5, LED), CircuitPart(IN, POWER))
+        val wires = listOf(w(IN, 3, 1), w(1, 3, 0), w(2, 4, 0), w(3, 4, 1), w(4, 5))
         return Circuit(parts, wires).simulate().input(5, 0)
     }
 
-    /** Level 2 rebuilt by hand: both emitters into the same LED input (wired OR). */
+    /** Level 2 rebuilt by hand: IN feeds both collectors; both emitters into the same LED input (wired OR). */
     private fun parallelOr(a: Boolean, b: Boolean): Boolean {
-        val parts = listOf(sw(1, a), sw(2, b), CircuitPart(3, TRANSISTOR), CircuitPart(4, TRANSISTOR), CircuitPart(5, LED))
-        val wires = listOf(w(1, 3, 0), w(2, 4, 0), w(3, 5), w(4, 5))
+        val parts = listOf(sw(1, a), sw(2, b), CircuitPart(3, TRANSISTOR), CircuitPart(4, TRANSISTOR), CircuitPart(5, LED), CircuitPart(IN, POWER))
+        val wires = listOf(w(IN, 3, 1), w(IN, 4, 1), w(1, 3, 0), w(2, 4, 0), w(3, 5), w(4, 5))
         return Circuit(parts, wires).simulate().input(5, 0)
     }
 
@@ -32,10 +33,16 @@ class CircuitTest {
         for (a in listOf(false, true)) for (b in listOf(false, true)) assertEquals(a || b, parallelOr(a, b), "$a $b")
     }
 
-    @Test fun unconnectedInputsReadZeroButCollectorReadsFiveVolts() {
+    @Test fun unconnectedInputsReadZeroAndThereIsNoHiddenPower() {
         val r = Circuit(listOf(sw(1, true), CircuitPart(2, TRANSISTOR), CircuitPart(3, AND)), listOf(w(1, 2, 0), w(1, 3, 0))).simulate()
-        assertTrue(r.output(2, 0))  // C defaults to +5V
+        assertFalse(r.output(2, 0)) // base on, but C has no power: no current
         assertFalse(r.output(3, 0)) // AND.B unconnected = 0
+    }
+
+    @Test fun powerIsAlwaysOnAndFeedsACollector() {
+        val r = Circuit(listOf(sw(1, true), CircuitPart(2, TRANSISTOR), CircuitPart(IN, POWER)), listOf(w(1, 2, 0), w(IN, 2, 1))).simulate()
+        assertTrue(r.output(IN, 0))
+        assertTrue(r.output(2, 0))
     }
 
     @Test fun halfAdderChip() {
