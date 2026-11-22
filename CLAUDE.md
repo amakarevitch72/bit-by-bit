@@ -128,8 +128,9 @@ Android SDK and is gitignored.
   - **Drag and drop** (`ui/circuit/DragAndDrop.kt`) works in Hard mode and the Sandbox, whatever the tool. It uses
     long-press, then drag, so a normal swipe still scrolls.
     - Drag a palette tile onto an empty cell to place it (`Editor.placeAt`, which respects the level's part limits).
-    - Drag a placed part to another cell to move it; its wires follow (`Editor.move`).
-    - Drop a part off the board to remove it (`Editor.dropOff`). Fixed parts can't be picked up.
+    - Drag any part to another cell to move it; its wires follow (`Editor.move`). This includes fixed parts (A, B, IN, LEDs), so the
+      player can arrange the whole board; Hard mode finds them by label via `HardLevel.specFor(editor)`.
+    - Drop a part off the board to remove it (`Editor.dropOff`). Fixed parts can't be removed (the ghost says "Stays on the board").
     - A `DragGhost` follows the finger ("Drop here" / "Taken" / "Drop to remove"), and the cell under it turns green or red.
     - Each screen owns one `DragState` (`rememberDragState()`), passes it to `CircuitBoard` and `ComponentPalette`, and draws
       `DragGhost` last in a root `Box`. Positions are in root coordinates; the board publishes its cell grid via `dropTarget`.

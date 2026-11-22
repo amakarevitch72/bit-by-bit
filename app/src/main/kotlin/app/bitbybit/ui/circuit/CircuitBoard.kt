@@ -224,10 +224,10 @@ fun CircuitBoard(
                             else -> Modifier
                         },
                     )
-                    // Long-press a part you placed and drag it: drop on a cell to move it, off the board to remove it.
+                    // Long-press any part and drag it to move it (fixed parts too). Dropping off the board removes it, unless it is fixed.
                     .then(
-                        if (drag != null && part != null && !part.fixed) Modifier.dragSource(
-                            drag, payload = { DragPayload.Existing(i, item?.symbol ?: part.label) }, onDrop = onDrop,
+                        if (drag != null && part != null) Modifier.dragSource(
+                            drag, payload = { DragPayload.Existing(i, item?.symbol ?: part.label, fixed = part.fixed) }, onDrop = onDrop,
                         ) else Modifier,
                     )
                     .clickable(enabled = part != null || s.tool != null || pending != null, role = Role.Button) { onTap(i) }

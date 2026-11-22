@@ -132,12 +132,12 @@ object Editor {
 
     /**
      * Drag and drop on the board: move the part at [from] to [to]. Its wires follow, because they refer to the cell.
-     * Fixed parts don't move; occupied cells are refused.
+     * Every part can be moved, fixed ones included (A, B, IN, LEDs): fixed only means it can't be removed.
+     * Occupied cells are refused.
      */
     fun move(s: EditorState, from: Int, to: Int): EditorState {
         if (from == to) return s
         val p = s.placed[from] ?: return s
-        if (p.fixed) return s.copy(message = "${p.label} is part of this level and stays where it is.")
         if (to in s.placed) return s.copy(message = "That spot is taken. Drop ${p.label} on an empty cell.")
         fun remap(c: Int) = if (c == from) to else c
         return s.copy(

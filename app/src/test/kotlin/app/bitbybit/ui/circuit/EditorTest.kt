@@ -1,6 +1,7 @@
 package app.bitbybit.ui.circuit
 
 import app.bitbybit.sim.CircuitWire
+import app.bitbybit.ui.screens.specFor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -96,11 +97,28 @@ class EditorTest {
         assertTrue(moved.sim!!.input(12, 1))                                     // still powered after the move
     }
 
-    @Test fun fixedPartsDontMoveAndTakenCellsAreRefused() {
+    @Test fun fixedPartsCanBeMovedButTakenCellsAreRefused() {
         val s = Editor.placeAt(start, 7, "TRANSISTOR")
-        assertEquals("IN is part of this level and stays where it is.", Editor.move(s, 2, 8).message)
-        assertTrue(2 in Editor.move(s, 2, 8).placed)
+        val moved = Editor.move(s, 2, 8)                                    // IN from C1 to D2
+        assertEquals("IN", moved.placed[8]?.label)
+        assertTrue(moved.placed.getValue(8).fixed)                          // still a level part
+        assertFalse(2 in moved.placed)
         assertEquals("That spot is taken. Drop Q1 on an empty cell.", Editor.move(s, 7, 14).message)
+    }
+
+    @Test fun hardLevelStillPassesAfterMovingItsFixedParts() {
+        val level = app.bitbybit.ui.screens.HARD_LEVELS.getValue(1)        // AND, IN at C1, LED at E3
+        var s = Editor.placeAt(start, 7, "TRANSISTOR")                     // Q1 at C2
+        s = Editor.placeAt(s, 12, "TRANSISTOR")                            // Q2 at C3
+        s = Editor.move(s, 2, 5)                                            // move IN from C1 to A2
+        s = Editor.move(s, 14, 19)                                          // move OUT from E3 to E4
+        fun wire(from: Int, to: Int, pin: Int) = s.copy(wires = s.wires + CircuitWire(from, 0, to, pin)).also { s = it }
+        wire(5, 7, 1); wire(0, 7, 0); wire(15, 12, 0); wire(7, 12, 1); wire(12, 19, 0)  // IN→Q1.C, A→Q1.B, B→Q2.B, Q1.E→Q2.C, Q2.E→OUT
+        val parts = s.placed.mapNotNull { (cell, p) -> p.kind?.let { app.bitbybit.sim.CircuitPart(cell, it, p.switchOn) } }
+        val spec = level.specFor(s)
+        assertNull(app.bitbybit.sim.HardMode.problem(spec, parts, s.wires))
+        val rows = app.bitbybit.sim.HardMode.run(spec, parts, s.wires)!!
+        assertTrue(rows.all { (k, v) -> v == app.bitbybit.sim.HardMode.want(spec, k) })
     }
 
     @Test fun draggingOffTheBoardRemovesAPartButNotAFixedOne() {

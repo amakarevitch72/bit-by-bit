@@ -117,6 +117,17 @@ val HARD_LEVELS: Map<Int, HardLevel> = listOf(
     ),
 ).associateBy { it.n }
 
+/** Cell of the fixed part called [label] right now (the player may have moved it), or [fallback]. */
+private fun EditorState.cellOf(label: String, fallback: Int): Int =
+    placed.entries.firstOrNull { it.value.fixed && it.value.label == label }?.key ?: fallback
+
+/** The level's spec, pointed at where A, B, IN and the LEDs are now. */
+fun HardLevel.specFor(e: EditorState): HardSpec = spec.copy(
+    inputs = listOf(e.cellOf("A", CELL_A), e.cellOf("B", CELL_B)),
+    leds = outputs.map { e.cellOf(it.label, it.cell) },
+    power = if (hasPower) e.cellOf("IN", CELL_POWER) else null,
+)
+
 data class HardUiState(
     val editor: EditorState,
     /** Step key ("0 1") → LED values, from the last Run test. Null = not tested since the last change. */
@@ -174,9 +185,10 @@ class HardWorkbenchViewModel(private val level: HardLevel) : ViewModel() {
     fun runTest() = _state.update { ui ->
         val e = ui.editor
         val parts = e.placed.mapNotNull { (cell, p) -> p.kind?.let { CircuitPart(cell, it, p.switchOn) } }
-        val problem = HardMode.problem(level.spec, parts, e.wires)
+        val spec = level.specFor(e)
+        val problem = HardMode.problem(spec, parts, e.wires)
         if (problem != null) ui.copy(editor = e.copy(message = problem, focused = null, pending = null), results = null)
-        else ui.copy(editor = e.copy(message = null), results = HardMode.run(level.spec, parts, e.wires))
+        else ui.copy(editor = e.copy(message = null), results = HardMode.run(spec, parts, e.wires))
     }
 }
 
@@ -195,7 +207,7 @@ fun HardWorkbench(level: HardLevel, data: LevelsFile, onBack: () -> Unit, onSolv
     val allPass = got != null && keys.all { got[it] == HardMode.want(level.spec, it) }
     val anyWrong = got != null && !allPass
     // Live outputs for the header chip: "OUT 1" or "C 1 · S 0".
-    val live = level.outputs.joinToString(" · ") { o -> "${o.label} ${if (s.sim?.input(o.cell, 0) == true) 1 else 0}" }
+    val live = level.outputs.joinToString(" · ") { o -> "${o.label} ${if (s.sim?.input(s.cellOf(o.label, o.cell), 0) == true) 1 else 0}" }
     val drag = rememberDragState()
 
     // The Box lets the drag ghost float above the whole screen.

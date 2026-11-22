@@ -43,7 +43,8 @@ import kotlin.math.roundToInt
 sealed interface DragPayload {
     val symbol: String
     data class New(val id: String, override val symbol: String) : DragPayload
-    data class Existing(val fromCell: Int, override val symbol: String) : DragPayload
+    /** [fixed]: a level part (A, B, IN, LEDs). It can be moved, but dropping it off the board doesn't remove it. */
+    data class Existing(val fromCell: Int, override val symbol: String, val fixed: Boolean = false) : DragPayload
 }
 
 /** The board publishes where its cells are, so a root position can be turned into a cell. */
@@ -120,6 +121,7 @@ fun DragGhost(drag: DragState, isFree: (Int) -> Boolean) {
     val (edge, hint) = when {
         cell != null && isFree(cell) -> Bb.High to "Drop here"
         cell != null -> Bb.Error to "Taken"
+        p is DragPayload.Existing && p.fixed -> Bb.PinOutline to "Stays on the board"
         p is DragPayload.Existing -> Bb.ErrorText to "Drop to remove"
         else -> Bb.PinOutline to "Drop on the board"
     }
