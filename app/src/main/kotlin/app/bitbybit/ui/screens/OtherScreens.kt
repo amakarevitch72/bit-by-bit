@@ -65,6 +65,31 @@ val LESSONS: Map<Int, Lesson> = mapOf(
         ),
         goal = "Find a way to wire the same two transistors so either one can light the LED.",
     ),
+    3 to Lesson(
+        headline = "Turning a signal upside down",
+        cards = listOf(
+            "What NOT does" to "NOT flips its input: 0 becomes 1, and 1 becomes 0. It's the only gate with a single input.",
+            "A new part: the resistor" to "A resistor lets a little current through from +5V to a point on the circuit. A transistor can drain that point to ground, taking the current away.",
+        ),
+        goal = "Decide where the LED goes, so it lights when A is off and goes dark when A is on.",
+    ),
+    4 to Lesson(
+        headline = "The universal gates",
+        cards = listOf(
+            "Two new gates" to "NAND is \"NOT AND\": 0 only when both inputs are 1. NOR is \"NOT OR\": 1 only when both inputs are 0.",
+            "Why they matter" to "Every other gate can be built from NAND alone, or from NOR alone. Real chips are made almost entirely of them.",
+            "Chips from now on" to "You build with the chips you made: AND, OR and NOT. Each counts as one block.",
+        ),
+        goal = "Fill the sockets so one LED shows NAND and the other shows NOR.",
+    ),
+    5 to Lesson(
+        headline = "One or the other, not both",
+        cards = listOf(
+            "What XOR does" to "XOR (exclusive OR) is 1 when exactly one input is 1. Both on, or both off, gives 0.",
+            "Where it's used" to "XOR is how a computer adds the right-hand digit of two bits. You'll need it for adding in Chapter 2.",
+        ),
+        goal = "Combine three gates so the LED follows XOR for all four inputs.",
+    ),
     6 to Lesson(
         headline = "Making bits add up",
         cards = listOf(
@@ -73,6 +98,31 @@ val LESSONS: Map<Int, Lesson> = mapOf(
             "Chips, not transistors" to "From now on you build with your chips: XOR, AND, OR, NAND. Each counts as one block.",
         ),
         goal = "Find which chip makes S and which makes C, so A + B comes out right for all four inputs.",
+    ),
+    7 to Lesson(
+        headline = "Adding with a carry-in",
+        cards = listOf(
+            "Why a half adder isn't enough" to "When you add bigger numbers, every column after the first also has to add the carry coming from the column on its right.",
+            "Three bits in, two out" to "A full adder adds A, B and Cin. S is the sum bit, Cout the carry to the next column. 1 + 1 + 1 = 11.",
+            "Your half adder is a chip now" to "Two half adders and one gate are enough. There are 8 input combinations, so the logic analyzer tests them for you.",
+        ),
+        goal = "Fill the three sockets so Cout and S are right for all 8 inputs.",
+    ),
+    8 to Lesson(
+        headline = "Adding real numbers",
+        cards = listOf(
+            "Four bits = 0 to 15" to "Each bit is worth twice the one to its right: 8, 4, 2, 1. So 0101 is 4 + 1 = 5.",
+            "Columns, like on paper" to "Add column by column from the right. Each column's carry goes into the next column on the left. The last carry, Cout, is worth 16.",
+        ),
+        goal = "Put a chip in every column and connect the carries so every sum from 0 + 0 to 15 + 15 is right.",
+    ),
+    9 to Lesson(
+        headline = "Subtracting by adding",
+        cards = listOf(
+            "The trick" to "Computers don't need a separate subtractor. A − B gives the same 4 bits as A + (B with every bit flipped) + 1. This is called two's complement.",
+            "Negative numbers" to "Read the top bit as −8 instead of 8, and 1110 means −2. The same bits, read another way.",
+        ),
+        goal = "Use your 4-bit adder to compute A − B for every A and B. You have chips for the B lines and a carry-in switch.",
     ),
 )
 

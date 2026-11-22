@@ -41,7 +41,11 @@ fun WorkbenchScreen(level: Level, data: LevelsFile, onBack: () -> Unit, onSolved
     val transistorLevel = TRANSISTOR_LEVELS[level.n]
     when {
         transistorLevel != null -> TransistorWorkbench(transistorLevel, onBack, onSolved)
+        level.n == 3 -> NotWorkbench(onBack, onSolved)
         level.n == 6 -> HalfAdderWorkbench(data, onBack, onSolved)
+        level.n in SOCKET_LEVELS -> SocketWorkbench(SOCKET_LEVELS.getValue(level.n), data, onBack, onSolved)
+        level.n == 8 -> Adder4Workbench(data, onBack, onSolved)
+        level.n == 9 -> SubtractorWorkbench(data, onBack, onSolved)
         else -> NotBuiltYet(level, onBack)
     }
 }

@@ -66,7 +66,7 @@ private const val CELL_A = 0
 private const val CELL_B = 15
 private const val CELL_POWER = 2
 
-/** A fixed output LED: its label and cell. */
+/** A fixed switch or LED on the Hard board: its label and cell. */
 data class HardOutput(val label: String, val cell: Int)
 
 data class HardLevel(
@@ -78,6 +78,8 @@ data class HardLevel(
     /** Parts that must be on the board before testing (e.g. both transistors). Empty = any mix of the palette. */
     val required: Map<PartKind, Int> = emptyMap(),
     /** Output LEDs, in the order the analyzer reads them (e.g. C then S, like binary "10"). */
+    /** Input switches, in analyzer order. Most levels have A (A1) and B (A4). */
+    val inputs: List<HardOutput> = listOf(HardOutput("A", CELL_A), HardOutput("B", CELL_B)),
     val outputs: List<HardOutput> = listOf(HardOutput("OUT", 14)),
     /** Transistor levels get a fixed power input IN (+5V); gate levels don't need one. */
     val hasPower: Boolean = false,
@@ -86,7 +88,7 @@ data class HardLevel(
     val wrongHint: String,
 ) {
     val spec = HardSpec(
-        inputs = listOf(CELL_A, CELL_B), leds = outputs.map { it.cell }, required = required, target = target,
+        inputs = inputs.map { it.cell }, leds = outputs.map { it.cell }, required = required, target = target,
         power = if (hasPower) CELL_POWER else null,
     )
 }
@@ -106,6 +108,33 @@ val HARD_LEVELS: Map<Int, HardLevel> = listOf(
         target = { listOf(it[0] || it[1]) },
         wrongHint = "Follow the current from IN to the LED for each step. Which path is open when only one switch is on?",
     ),
+    HardLevel(
+        4, "Build NAND and NOR",
+        "Make the top LED show NAND (NOT of A AND B) and the bottom LED show NOR (NOT of A OR B). You have one AND, one OR and two NOTs.",
+        palette = mapOf("AND" to 1, "OR" to 1, "NOT" to 2),
+        outputs = listOf(HardOutput("NAND", 9), HardOutput("NOR", 14)),
+        target = { (a, b) -> listOf(!(a && b), !(a || b)) },
+        wrongHint = "Each output is one gate followed by NOT. Which gate feeds each NOT?",
+    ),
+    // There's no XOR chip in the box: it has to be built from the others.
+    HardLevel(
+        5, "Build an XOR gate",
+        "Light X when exactly one of A and B is on. There's no XOR chip: build it from AND, OR, NAND and NOR (one of each).",
+        palette = mapOf("AND" to 1, "OR" to 1, "NAND" to 1, "NOR" to 1),
+        outputs = listOf(HardOutput("X", 14)),
+        target = { (a, b) -> listOf(a != b) },
+        wrongHint = "XOR is \"A or B, but not both\". Which gate says \"or\", which says \"not both\", and which joins them?",
+    ),
+    // Three inputs: A, B and the carry-in from the column before.
+    HardLevel(
+        7, "Build a full adder",
+        "Add A + B + Cin. Cout is the carry out, S the sum: 1 + 1 + 1 = 11. Two half adders and one more gate are enough.",
+        palette = mapOf("HA" to 2, "OR" to 1, "AND" to 1, "XOR" to 1),
+        inputs = listOf(HardOutput("A", 0), HardOutput("B", 5), HardOutput("Cin", 15)),
+        outputs = listOf(HardOutput("Cout", 9), HardOutput("S", 14)),
+        target = { (a, b, c) -> listOf((a && b) || (c && (a != b)), (a != b) != c) },
+        wrongHint = "Add A + B first, then add Cin to that sum. The two carries meet in one more gate.",
+    ),
     // No sockets, no hints about which chips: pick from four gates, one of each, and wire both outputs yourself.
     HardLevel(
         6, "Build a half adder",
@@ -123,7 +152,7 @@ private fun EditorState.cellOf(label: String, fallback: Int): Int =
 
 /** The level's spec, pointed at where A, B, IN and the LEDs are now. */
 fun HardLevel.specFor(e: EditorState): HardSpec = spec.copy(
-    inputs = listOf(e.cellOf("A", CELL_A), e.cellOf("B", CELL_B)),
+    inputs = inputs.map { e.cellOf(it.label, it.cell) },
     leds = outputs.map { e.cellOf(it.label, it.cell) },
     power = if (hasPower) e.cellOf("IN", CELL_POWER) else null,
 )
@@ -138,8 +167,7 @@ class HardWorkbenchViewModel(private val level: HardLevel) : ViewModel() {
     private val start = EditorState(
         cols = COLS, rows = ROWS,
         placed = buildMap {
-            put(CELL_A, PlacedPart("SWITCH", "A", fixed = true))
-            put(CELL_B, PlacedPart("SWITCH", "B", fixed = true))
+            level.inputs.forEach { put(it.cell, PlacedPart("SWITCH", it.label, fixed = true)) }
             if (level.hasPower) put(CELL_POWER, PlacedPart("POWER", "IN", fixed = true))
             level.outputs.forEach { put(it.cell, PlacedPart("LED", it.label, fixed = true)) }
         },
@@ -236,7 +264,7 @@ fun HardWorkbench(level: HardLevel, data: LevelsFile, onBack: () -> Unit, onSolv
             )
             Box(Modifier.padding(horizontal = 16.dp)) {
                 LogicAnalyzer(
-                    inputNames = listOf("A", "B"),
+                    inputNames = level.inputs.map { it.label },
                     outputNames = level.outputs.map { it.label },
                     keys = keys,
                     want = { HardMode.want(level.spec, it) },

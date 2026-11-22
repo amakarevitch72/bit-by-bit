@@ -29,7 +29,7 @@ Live canvas (owner only): https://claude.ai/artifact/U8FtXyf25n2eJCpLmKPARn
 | Transistor workbench (AND), shared layout | `design/Workbench.dc.html` | 1 |
 | Lesson (OR) | `design/Lesson2.dc.html` | 2 |
 | Transistor workbench (OR), same file with `level()` = 2 | `design/Workbench2.dc.html` | 2 |
-| Hard mode: build it yourself (AND / OR / half adder), same file with `level()` = 1 / 2 / 6 | `design/WorkbenchHard.dc.html`, `design/WorkbenchHard2.dc.html`, `design/WorkbenchHard6.dc.html` | 1, 2, 6 |
+| Hard mode: build it yourself (also used for 4, 5, 7 in the app), same file with `level()` = 1 / 2 / 6 | `design/WorkbenchHard.dc.html`, `design/WorkbenchHard2.dc.html`, `design/WorkbenchHard6.dc.html` | 1, 2, 6 |
 | Lesson (half adder) | `design/Lesson6.dc.html` | 6 |
 | Level complete | `design/Complete.dc.html` | any |
 | Chip toolbox | `design/Toolbox.dc.html` | — |
@@ -40,7 +40,7 @@ Live canvas (owner only): https://claude.ai/artifact/U8FtXyf25n2eJCpLmKPARn
 | Calculator milestone | `design/Calculator.dc.html` | 14 |
 | SR latch workbench | `design/SRLatch.dc.html` | 15 |
 
-Not designed yet: levels 3–5, 10–13 and 16–24. Build them from `docs/levels.json` using the
+Not designed yet: levels 10–13 and 16–24 (levels 3–5 are built in the app without a mockup; see Current state). Build them from `docs/levels.json` using the
 patterns of the nearest designed workbench (see SPEC §4).
 
 ## Stack
@@ -111,7 +111,7 @@ Android SDK and is gitignored.
     "Run test" button) → one main button. The header shows the live outputs ("OUT 1", or "C 1 · S 0").
   - Fixed parts that can't be removed: switches A (A1) and B (A4), the output LEDs, and for transistor levels the power input
     **IN (+5V) at C1**. The palette holds only the level's parts, with a count ("Transistor, 2 left").
-  - Levels with Hard mode: **1, 2** (Transistor ×2, both required, IN at C1, LED "OUT" at E3) and **6** (one each of
+  - Levels with Hard mode: **4, 5, 7** (see below), **1, 2** (Transistor ×2, both required, IN at C1, LED "OUT" at E3) and **6** (one each of
     AND/OR/NAND/XOR, nothing required, so the player must work out which chips to use; no IN; LEDs C at E2 and S at E3).
   - Rules are in `:sim` `HardMode` (tested in `HardModeTest.kt`): every required part must be placed; switches may only
     drive a transistor's base or a gate input; every LED must be driven by a placed part, never straight from a switch or IN;
@@ -164,7 +164,20 @@ Android SDK and is gitignored.
   result box and the want/got table ("A B → C S"). Starts with XOR in Sum and Carry empty. Level 6 also has a lesson.
 - **Debug builds only:** Journey lists every chapter's levels and locked levels can be opened ("Open (debug)"), so any level
   can be tested without playing everything before it. Gated by `BuildConfig.DEBUG`; release builds aren't affected.
-- Every other level shows "Not built yet" with a pointer to its mockup.
+- **Chapters 1 and 2 are fully playable (Levels 1–9).** Every level has a lesson in `LESSONS`. Routing is in `WorkbenchScreen.kt`:
+  - **Level 3 (NOT)**, `NotWorkbench.kt`, sim `InverterBoard`: +5V → resistor → node → transistor (base A) → ground. The player chooses
+    where the LED goes: "After the emitter" (copies A, wrong) or "Above the transistor" (on the node, so NOT A). Normal only: the boolean
+    sim has no ground/resistor model, so there is no Hard mode.
+  - **Levels 4, 5, 7** share `SocketWorkbench.kt`, a generic socket board driven by a `SocketSpec` in `:sim` `Sockets.kt`
+    (`SocketLevels.NAND_NOR`, `XOR`, `FULL_ADDER`). Each `SocketLevel` in `SOCKET_LEVELS` sets the tray, the starting chips and the hints.
+    Columns are laid out by socket depth, wires are drawn on a Canvas, and the logic analyzer tests every input combination.
+    To add a socket level, add a `SocketSpec` and a `SocketLevel`.
+  - **Level 8 (4-bit adder)** and **Level 9 (subtractor)** are in `MultiBitWorkbenches.kt` (sims `Adder4Board`, `SubtractorBoard`),
+    ported from `design/Adder4.dc.html` and `design/Subtractor.dc.html`: bit columns, chip sockets, carry links / Cin, the exhaustive test.
+    No Hard mode (too many switches for the 5×4 board).
+  - **Hard mode** exists for 1, 2, 4, 5, 6 and 7. `HardLevel` takes `inputs` (label + cell), so Level 7 has three switches
+    (A, B, Cin). `HardLevelsTest.kt` solves every Hard level on its real layout and palette.
+- Levels 10–24 show "Not built yet" with a pointer to their mockup.
 - Fonts are the platform defaults until the three font files are added (`TODO(fonts)` in Theme.kt).
 - No launcher icon yet.
 

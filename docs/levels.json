@@ -33,19 +33,19 @@
   "levels": [
     {
       "n": 1, "chapter": 1, "id": "and", "title": "AND gate", "desc": "2 transistors in series",
-      "status": "designed", "mockup": ["design/Lesson.dc.html", "design/Workbench.dc.html", "design/Complete.dc.html"],
+      "status": "built_in_app", "implementation": "ui/screens/TransistorWorkbench.kt + HardWorkbench.kt; sim TransistorPairBoard", "mockup": ["design/Lesson.dc.html", "design/Workbench.dc.html", "design/Complete.dc.html"],
       "kind": "transistor", "inputs": ["A", "B"], "outputs": ["OUT"],
       "board": "+5V → Q1 (base A) → Q2 (base B) → LED → GND; pre-wired in Level 1",
       "test": { "type": "truth_table_manual", "rows": 4 },
       "expected": "OUT = A AND B", "unlocks": "AND"
     },
-    { "n": 2, "chapter": 1, "id": "or", "title": "OR gate", "desc": "2 transistors in parallel", "status": "built_in_app", "implementation": "app/.../ui/screens/OrWorkbench.kt + sim TransistorPairBoard", "kind": "transistor_wiring", "inputs": ["A", "B"], "outputs": ["OUT"], "choices": ["SERIES", "PARALLEL"], "start": { "wiring": null }, "solution": "PARALLEL", "wrongChoiceHint": "Stacked means current must pass through A and then B — that is the AND gate from Level 1.", "expected": "OUT = A OR B", "test": { "type": "truth_table_manual", "rows": 4, "clearsOn": "wiring change" }, "unlocks": "OR" },
-    { "n": 3, "chapter": 1, "id": "not", "title": "NOT gate", "desc": "Flip a signal", "status": "not_designed", "kind": "transistor", "inputs": ["A"], "outputs": ["OUT"], "expected": "OUT = NOT A", "test": { "type": "truth_table_manual", "rows": 2 }, "unlocks": "NOT" },
-    { "n": 4, "chapter": 1, "id": "nand_nor", "title": "NAND & NOR", "desc": "The universal gates", "status": "not_designed", "kind": "chips", "tray": ["AND", "OR", "NOT"], "expected": "NAND = NOT(A AND B); NOR = NOT(A OR B)", "test": { "type": "truth_table_manual", "rows": 4 }, "unlocks": ["NAND", "NOR"] },
-    { "n": 5, "chapter": 1, "id": "xor", "title": "XOR gate", "desc": "One or the other, not both", "status": "not_designed", "kind": "chips", "tray": ["AND", "OR", "NAND", "NOR"], "solution": "(A OR B) AND (A NAND B)", "test": { "type": "truth_table_manual", "rows": 4 }, "unlocks": "XOR" },
+    { "n": 2, "chapter": 1, "id": "or", "title": "OR gate", "desc": "2 transistors in parallel", "status": "built_in_app", "implementation": "ui/screens/TransistorWorkbench.kt + HardWorkbench.kt; sim TransistorPairBoard", "kind": "transistor_wiring", "inputs": ["A", "B"], "outputs": ["OUT"], "choices": ["SERIES", "PARALLEL"], "start": { "wiring": null }, "solution": "PARALLEL", "wrongChoiceHint": "Stacked means current must pass through A and then B — that is the AND gate from Level 1.", "expected": "OUT = A OR B", "test": { "type": "truth_table_manual", "rows": 4, "clearsOn": "wiring change" }, "unlocks": "OR" },
+    { "n": 3, "chapter": 1, "id": "not", "title": "NOT gate", "desc": "Flip a signal", "status": "built_in_app", "implementation": "ui/screens/NotWorkbench.kt; sim InverterBoard (Normal only)", "kind": "transistor", "inputs": ["A"], "outputs": ["OUT"], "expected": "OUT = NOT A", "test": { "type": "truth_table_manual", "rows": 2 }, "unlocks": "NOT" },
+    { "n": 4, "chapter": 1, "id": "nand_nor", "title": "NAND & NOR", "desc": "The universal gates", "status": "built_in_app", "implementation": "ui/screens/SocketWorkbench.kt + HardWorkbench.kt; sim SocketLevels.NAND_NOR", "kind": "chips", "tray": ["AND", "OR", "NOT"], "expected": "NAND = NOT(A AND B); NOR = NOT(A OR B)", "test": { "type": "truth_table_manual", "rows": 4 }, "unlocks": ["NAND", "NOR"] },
+    { "n": 5, "chapter": 1, "id": "xor", "title": "XOR gate", "desc": "One or the other, not both", "status": "built_in_app", "implementation": "ui/screens/SocketWorkbench.kt + HardWorkbench.kt; sim SocketLevels.XOR", "kind": "chips", "tray": ["AND", "OR", "NAND", "NOR"], "solution": "(A OR B) AND (A NAND B)", "test": { "type": "truth_table_manual", "rows": 4 }, "unlocks": "XOR" },
     {
       "n": 6, "chapter": 2, "id": "half_adder", "title": "Half adder", "desc": "Sum + carry of two bits",
-      "status": "designed", "mockup": ["design/HalfAdder.dc.html"], "kind": "chips",
+      "status": "built_in_app", "implementation": "ui/screens/HalfAdderWorkbench.kt + HardWorkbench.kt; sim HalfAdderBoard", "mockup": ["design/HalfAdder.dc.html"], "kind": "chips",
       "inputs": ["A", "B"], "outputs": ["S", "C"],
       "sockets": [{ "id": "s", "drives": "S", "inputs": ["A", "B"] }, { "id": "c", "drives": "C", "inputs": ["A", "B"] }],
       "tray": ["XOR", "AND", "OR", "NAND"],
@@ -56,7 +56,7 @@
     },
     {
       "n": 7, "chapter": 2, "id": "full_adder", "title": "Full adder", "desc": "Add a carry-in",
-      "status": "designed", "mockup": ["design/FullAdder.dc.html"], "kind": "chips",
+      "status": "built_in_app", "implementation": "ui/screens/SocketWorkbench.kt + HardWorkbench.kt; sim SocketLevels.FULL_ADDER", "mockup": ["design/FullAdder.dc.html"], "kind": "chips",
       "inputs": ["A", "B", "Cin"], "outputs": ["S", "Cout"],
       "sockets": [
         { "id": "h1", "inputs": ["A", "B"], "outputs": ["S1", "C1"] },
@@ -72,7 +72,7 @@
     },
     {
       "n": 8, "chapter": 2, "id": "adder4", "title": "4-bit adder", "desc": "Chain four full adders",
-      "status": "designed", "mockup": ["design/Adder4.dc.html"], "kind": "chips_columns",
+      "status": "built_in_app", "implementation": "ui/screens/MultiBitWorkbenches.kt (Adder4Workbench); sim Adder4Board", "mockup": ["design/Adder4.dc.html"], "kind": "chips_columns",
       "inputs": ["A[4]", "B[4]"], "outputs": ["S[4]", "Cout"],
       "sockets": "one per bit (0–3)", "links": "carry link bit k → bit k+1 (k = 0..2); Cin of bit 0 = 0",
       "tray": ["FA", "HA", "OR"],
@@ -84,7 +84,7 @@
     },
     {
       "n": 9, "chapter": 2, "id": "subtractor", "title": "Subtractor", "desc": "Two's complement",
-      "status": "designed", "mockup": ["design/Subtractor.dc.html"], "kind": "chips_columns",
+      "status": "built_in_app", "implementation": "ui/screens/MultiBitWorkbenches.kt (SubtractorWorkbench); sim SubtractorBoard", "mockup": ["design/Subtractor.dc.html"], "kind": "chips_columns",
       "inputs": ["A[4]", "B[4]"], "outputs": ["R[4]", "Cout"], "fixedParts": ["ADD4"],
       "sockets": "one per B line (bit 0–3), between B and ADD4", "controls": ["Cin toggle", "Signed view toggle"],
       "tray": ["NOT", "XOR (2nd pin tied to 1)", "AND"],
