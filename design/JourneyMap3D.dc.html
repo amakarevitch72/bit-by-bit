@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Level map: 3D circuit board concept</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1116}
+/* Everything on the board keeps its own depth, so chips stand up out of the tilted board. */
+.plane, .plane *{transform-style:preserve-3d}
+.face{position:absolute;box-sizing:border-box}
+.flow{stroke-dasharray:3 9;animation:bb-flow .8s linear infinite}
+@keyframes bb-flow{to{stroke-dashoffset:-12}}
+.bob{animation:bb-bob 1.8s ease-in-out infinite}
+@keyframes bb-bob{50%{transform:translateZ(12px)}}
+.halo{animation:bb-halo 1.8s ease-in-out infinite}
+@keyframes bb-halo{50%{transform:scale(.8);opacity:.5}}
+@media (prefers-reduced-motion: reduce){.flow,.bob,.halo{animation:none}}
+.node{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0E1116; color: #E8ECF2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <!-- Header: the goal of the whole game, always visible -->
+  <header style="padding: 18px 20px 0; display: flex; flex-direction: column; gap: 8px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #4ADE80">BIT BY BIT</span>
+      <div style="display: flex; gap: 6px">
+        <span style="padding: 3px 8px; border-radius: 8px; background: #1D1A12; color: #F5B544; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">★ {{starTotal}}</span>
+        <span style="padding: 3px 8px; border-radius: 8px; background: #171B22; border: 1px solid #2A3140; color: #C5CCD6; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700">NORMAL</span>
+      </div>
+    </div>
+    <span style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700">Your computer</span>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="flex: 1; height: 8px; border-radius: 4px; background: #232A36; overflow: hidden"><div style="{{barStyle}}"></div></div>
+      <span style="font-size: 12px; color: #9AA4B2">{{doneCount}} of 24 parts</span>
+    </div>
+  </header>
+
+  <!-- The 3D board -->
+  <div role="img" aria-label="{{sceneLabel}}" style="position: relative; height: 478px; flex: none; perspective: 1050px; perspective-origin: 50% 22%; overflow: hidden">
+    <div class="plane" style="position: absolute; left: 36px; bottom: 34px; width: 318px; height: 900px; transform-origin: 50% 100%; transform: rotateX(56deg)">
+      <!-- slab: top surface with pad dots, plus its thickness on the near edge and sides -->
+      <div class="face" style="left: 0; top: 0; width: 318px; height: 900px; border-radius: 18px; background-color: #0C1912; background-image: radial-gradient(#1F3B2B 1.2px, transparent 1.6px); background-size: 18px 18px; border: 2px solid #2C4A38"></div>
+      <div class="face" style="left: 10px; top: 900px; width: 298px; height: 16px; transform-origin: top; transform: rotateX(-90deg); background: #07100B"></div>
+      <div class="face" style="left: 0; top: 0; width: 16px; height: 900px; transform-origin: left; transform: rotateY(90deg); background: #0A150F"></div>
+      <div class="face" style="left: 318px; top: 0; width: 16px; height: 900px; transform-origin: left; transform: rotateY(90deg); background: #0A150F"></div>
+
+      <!-- copper traces, chapter silkscreen and gold pins, flat on the board -->
+      <svg width="318" height="900" viewBox="0 0 318 900" style="position: absolute; left: 0; top: 0" aria-hidden="true">
+        <line x1="20" y1="420" x2="298" y2="420" stroke="#2C4A38" stroke-width="1.5" stroke-dasharray="8 6"></line>
+        <text x="22" y="880" fill="#3F6B52" font-family="JetBrains Mono, monospace" font-size="15" font-weight="700" letter-spacing="2">CH 1 · LOGIC GATES</text>
+        <text x="22" y="410" fill="#3F6B52" font-family="JetBrains Mono, monospace" font-size="15" font-weight="700" letter-spacing="2">CH 2 · ARITHMETIC</text>
+        <text x="22" y="22" fill="#6B5A2E" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" letter-spacing="2">CH 3 · CALCULATOR ★</text>
+        <path d="{{dimD}}" fill="none" stroke="#1B2430" stroke-width="7" stroke-linejoin="round" stroke-dasharray="10 8"></path>
+        <path d="{{litD}}" fill="none" stroke="#1F5A3A" stroke-width="7" stroke-linejoin="round"></path>
+        <path d="{{litD}}" fill="none" stroke="#4ADE80" stroke-width="3" stroke-linejoin="round" class="flow"></path>
+        <path d="{{pinD}}" fill="#C9A44C" stroke="#7A5F22" stroke-width="0.8"></path>
+      </svg>
+
+      <div class="face halo" style="{{haloStyle}}"></div>
+      <!-- chips: real boxes (top, front and both sides) standing on the board -->
+      <sc-for list="{{nodes}}" as="n" hint-placeholder-count="10">
+
+        <div class="{{n.wrapCls}}" style="{{n.wrap}}" onClick="{{n.pick}}" role="button" aria-label="{{n.aria}}">
+          <div class="face" style="{{n.shadow}}"></div>
+          <div class="face" style="{{n.left}}"></div>
+          <div class="face" style="{{n.right}}"></div>
+          <div class="face" style="{{n.front}}"></div>
+          <div class="face" style="{{n.top}}"><span style="{{n.symStyle}}">{{n.sym}}</span></div>
+          <!-- a sign that stands upright above the chip, facing the player -->
+          <div class="face" style="{{n.signWrap}}"><div style="{{n.sign}}">{{n.signText}}</div></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- The selected level -->
+  <section style="margin: 0 16px; padding: 14px 16px; border-radius: 16px; background: #171B22; border: 1px solid #2A3140; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <div style="{{selChip}}">{{selSym}}</div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+        <span style="{{selEyebrow}}">{{selEyebrowText}}</span>
+        <span style="font-size: 17px; font-weight: 600">{{selTitle}}</span>
+        <span style="font-size: 12px; color: #9AA4B2">{{selDesc}}</span>
+      </div>
+      <span style="font-size: 18px; letter-spacing: 2px">
+        <sc-for list="{{selStars}}" as="s" hint-placeholder-count="3"><span style="{{s.style}}">★</span></sc-for>
+      </span>
+    </div>
+    <div style="{{selButton}}">{{selButtonText}}</div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"current":{"editor":"number","default":4,"min":1,"max":10},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: null };
+  }
+  renderVals() {
+    var self = this;
+    var TILT = 56;
+    var current = Math.max(1, Math.min(10, Math.round(this.props.current ?? 4)));
+    var STARS = [3, 2, 3, 2, 1, 3, 2, 2, 3];
+    var L = [
+      { n: 1, t: "AND gate", d: "2 transistors in series", sym: "&", x: 86, y: 810, ch: 1 },
+      { n: 2, t: "OR gate", d: "2 transistors in parallel", sym: "≥1", x: 232, y: 730, ch: 1 },
+      { n: 3, t: "NOT gate", d: "Flip a signal", sym: "1○", x: 96, y: 640, ch: 1 },
+      { n: 4, t: "NAND & NOR", d: "The universal gates", sym: "&○", x: 226, y: 550, ch: 1 },
+      { n: 5, t: "XOR gate", d: "One or the other, not both", sym: "=1", x: 92, y: 470, ch: 1 },
+      { n: 6, t: "Half adder", d: "Sum + carry of two bits", sym: "HA", x: 228, y: 360, ch: 2 },
+      { n: 7, t: "Full adder", d: "Add a carry-in", sym: "FA", x: 96, y: 280, ch: 2 },
+      { n: 8, t: "4-bit adder", d: "Chain four full adders", sym: "ADD", x: 224, y: 200, ch: 2 },
+      { n: 9, t: "Subtractor", d: "Two's complement", sym: "SUB", x: 104, y: 124, ch: 2 },
+      { n: 14, t: "Pocket calculator", d: "Milestone: chapter 3", sym: "CALC ★", x: 190, y: 54, ch: 3, boss: true }
+    ];
+    // index in the path: 0..9; the boss is the 10th stop
+    function status(i) { return i + 1 < current ? "done" : i + 1 === current ? "current" : "locked"; }
+    var C = {
+      done:    { top: "#1B4A30", front: "#2E7A4E", side: "#24643F", line: "#4ADE80", text: "#4ADE80", h: 24 },
+      current: { top: "#4A3914", front: "#A87A22", side: "#8A6420", line: "#F5B544", text: "#FFD58A", h: 36 },
+      locked:  { top: "#202631", front: "#353E4D", side: "#2C3441", line: "#3A4352", text: "#6B7585", h: 12 },
+      boss:    { top: "#262036", front: "#4A3F66", side: "#3C3354", line: "#F5B544", text: "#F5B544", h: 30 }
+    };
+    var sel = this.state.sel == null ? Math.min(current, 10) - 1 : this.state.sel;
+
+    var litD = "", dimD = "", pinD = "", haloStyle = "display: none";
+    for (var i = 0; i < L.length - 1; i++) {
+      var a = L[i], b = L[i + 1], lit = i + 2 <= current;
+      var ya = a.y - 26, yb = b.y + (b.boss ? 32 : 26), mid = Math.round((ya + yb) / 2);
+      var seg = "M" + a.x + " " + ya + " V" + mid + " H" + b.x + " V" + yb + " ";
+      if (lit) litD += seg; else dimD += seg;
+    }
+
+    var nodes = L.map(function (l, i) {
+      var st = l.boss ? (current >= 10 ? "current" : "locked") : status(i);
+      var c = l.boss && st === "locked" ? C.boss : C[st];
+      var w = l.boss ? 132 : 72, d = l.boss ? 64 : 52, h = c.h;
+      var x0 = l.x - w / 2, y0 = l.y - d / 2;
+      // gold pins along both long sides of the chip footprint
+      var count = l.boss ? 6 : 3;
+      for (var k = 0; k < count; k++) {
+        var px = x0 + 8 + k * ((w - 22) / (count - 1));
+        pinD += "M" + Math.round(px) + " " + Math.round(y0 - 8) + " h7 v6 h-7 Z ";
+        pinD += "M" + Math.round(px) + " " + Math.round(y0 + d + 2) + " h7 v6 h-7 Z ";
+      }
+      var on = sel === i;
+      var border = on ? "#FFFFFF" : c.line;
+      var stars = st === "done" ? "★★★".slice(0, STARS[i]) : "";
+      if (st === "current") haloStyle = "left: " + (l.x - w * 0.8) + "px; top: " + (l.y - d * 0.9) + "px; width: " + (w * 1.6) + "px; height: " + (d * 1.8) + "px; border-radius: 50%; background: radial-gradient(rgba(245,181,68,.4), rgba(245,181,68,0) 70%)";
+      var signText = st === "current" ? (l.boss ? "Milestone · play" : l.n + " · " + l.t) : st === "done" ? stars : l.boss ? "Milestone" : "";
+      var signColor = st === "current" || l.boss ? "#F5B544" : "#F5B544";
+      return {
+        wrapCls: "node" + (st === "current" ? " bob" : ""),
+        wrap: "position: absolute; left: " + x0 + "px; top: " + y0 + "px; width: " + w + "px; height: " + d + "px",
+        shadow: "left: 8px; top: 12px; width: " + w + "px; height: " + d + "px; border-radius: 10px; background: rgba(0,0,0,.55); filter: blur(5px)",
+        left:  "left: 0; top: 0; width: " + h + "px; height: " + d + "px; transform-origin: left; transform: rotateY(-90deg); background: " + c.side,
+        right: "left: " + w + "px; top: 0; width: " + h + "px; height: " + d + "px; transform-origin: left; transform: rotateY(-90deg); background: " + c.side,
+        front: "left: 0; top: " + d + "px; width: " + w + "px; height: " + h + "px; transform-origin: top; transform: rotateX(90deg); background: " + c.front + "; border-top: 2px solid " + c.line,
+        top:   "left: 0; top: 0; width: " + w + "px; height: " + d + "px; transform: translateZ(" + h + "px); border-radius: 6px; background: " + c.top + "; border: 2px solid " + border + "; display: flex; align-items: center; justify-content: center; " +
+               (on ? "box-shadow: 0 0 0 3px rgba(255,255,255,.18)" : ""),
+        symStyle: "font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: " + (l.boss ? 22 : 22) + "px; color: " + c.text,
+        sym: st === "locked" && !l.boss ? String(l.n) : l.sym,
+        signWrap: signText
+          ? "left: -60px; top: 0px; width: " + (w + 120) + "px; height: 0; transform-origin: 50% 0; transform: translateZ(" + (h + 2) + "px) rotateX(-" + TILT + "deg)"
+          : "display: none",
+        sign: "position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); white-space: nowrap; font-family: 'JetBrains Mono', monospace; font-weight: 700; " +
+              (st === "current"
+                ? "font-size: 13px; padding: 5px 10px; border-radius: 10px; background: #F5B544; color: #1A1406"
+                : st === "done" ? "font-size: 15px; letter-spacing: 1px; color: " + signColor
+                : "font-size: 12px; padding: 3px 8px; border-radius: 8px; border: 1px dashed #F5B544; color: #F5B544; background: #14110A"),
+        signText: signText,
+        aria: "Level " + l.n + ", " + l.t + ", " + st + (st === "done" ? ", " + STARS[i] + " stars" : ""),
+        pick: function () { self.setState({ sel: i }); }
+      };
+    });
+
+    var done = Math.min(current - 1, 9);
+    var starTotal = STARS.slice(0, done).reduce(function (s, v) { return s + v; }, 0);
+    var sl = L[sel], sst = sl.boss ? (current >= 10 ? "current" : "locked") : status(sel);
+    var sc = sl.boss && sst === "locked" ? C.boss : C[sst];
+    var prev = sl.boss ? "Level 13" : "Level " + (sl.n - 1);
+    var btn = {
+      done: ["Replay", "background: transparent; border: 1px solid #2A3140; color: #E8ECF2"],
+      current: ["Play", "background: #F5B544; color: #1A1406"],
+      locked: ["Finish " + prev + " first", "background: #1A1F27; color: #5B6575"]
+    }[sst];
+
+    return {
+      starTotal: starTotal,
+      doneCount: done,
+      barStyle: "width: " + Math.round(done / 24 * 100) + "%; height: 100%; background: #4ADE80",
+      sceneLabel: "Level map as a 3D circuit board. " + done + " levels done, current level " + Math.min(current, 10) + ".",
+      litD: litD || "M0 0", dimD: dimD || "M0 0", pinD: pinD, haloStyle: haloStyle, nodes: nodes,
+      selChip: "width: 52px; height: 52px; flex: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; " +
+               "background: " + sc.top + "; color: " + sc.text + "; border: 2px solid " + sc.line + "; box-shadow: 0 5px 0 " + sc.front,
+      selSym: sl.sym.replace(" ★", ""),
+      selEyebrow: "font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: " + (sst === "locked" ? "#5B6575" : sc.text),
+      selEyebrowText: "LEVEL " + sl.n + " · CHAPTER " + sl.ch + (sst === "locked" ? " · LOCKED" : sst === "done" ? " · DONE" : ""),
+      selTitle: sl.t, selDesc: sl.d,
+      selStars: [0, 1, 2].map(function (k) {
+        var lit = sst === "done" && k < STARS[sel];
+        return { style: "color: " + (lit ? "#F5B544" : "#2A3140") };
+      }),
+      selButton: "height: 50px; border-radius: 14px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px; cursor: pointer; " + btn[1] +
+                 (sst === "current" ? "; box-shadow: 0 4px 0 #8A6420" : ""),
+      selButtonText: btn[0]
+    };
+  }
+}
+</script>
+</body>
+</html>

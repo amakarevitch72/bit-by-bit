@@ -33,6 +33,8 @@ Live canvas (owner only): https://claude.ai/artifact/U8FtXyf25n2eJCpLmKPARn
 | Lesson (half adder) | `design/Lesson6.dc.html` | 6 |
 | Level complete | `design/Complete.dc.html` | any |
 | Chip toolbox | `design/Toolbox.dc.html` | — |
+| Proposal, not built: level map as a dark 3D circuit board | `design/JourneyMap3D.dc.html` | — |
+| Proposal, not built: level map, bright 3D game style | `design/JourneyMapBright.dc.html` | — |
 | Half adder workbench | `design/HalfAdder.dc.html` | 6 |
 | Full adder workbench | `design/FullAdder.dc.html` | 7 |
 | 4-bit adder workbench | `design/Adder4.dc.html` | 8 |
@@ -162,8 +164,8 @@ Android SDK and is gitignored.
 - **Level 6 Normal** (`ui/screens/HalfAdderWorkbench.kt`, sim `HalfAdderBoard`), ported from `design/HalfAdder.dc.html`: Sum and
   Carry sockets, chip tray (XOR/AND/OR/NAND; tap a chip, then a socket; tap a filled socket to empty it), A/B inputs, a "C S"
   result box and the want/got table ("A B → C S"). Starts with XOR in Sum and Carry empty. Level 6 also has a lesson.
-- **Debug builds only:** Journey lists every chapter's levels and locked levels can be opened ("Open (debug)"), so any level
-  can be tested without playing everything before it. Gated by `BuildConfig.DEBUG`; release builds aren't affected.
+- **Level gating:** a level unlocks only after every level before it is complete (`currentLevel` in `ProgressStore.kt`); locked chapters stay folded.
+  For testing, set `DEV_OPEN_ALL_LEVELS` in `JourneyScreen.kt` to `BuildConfig.DEBUG && true` to open any level ("Open (debug)"); it is off by default and never applies to release builds.
 - **Chapters 1 and 2 are fully playable (Levels 1–9).** Every level has a lesson in `LESSONS`. Routing is in `WorkbenchScreen.kt`:
   - **Level 3 (NOT)**, `NotWorkbench.kt`, sim `InverterBoard`: +5V → resistor → node → transistor (base A) → ground. The player chooses
     where the LED goes: "After the emitter" (copies A, wrong) or "Above the transistor" (on the node, so NOT A). Normal only: the boolean

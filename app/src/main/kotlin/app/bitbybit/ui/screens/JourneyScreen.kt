@@ -78,8 +78,8 @@ fun JourneyScreen(
             }
             data.chapters.forEach { chapter ->
                 val levels = data.levels.filter { it.chapter == chapter.id }
-                // Debug builds list every chapter's levels so locked ones can be opened for testing.
-                val unlocked = BuildConfig.DEBUG || levels.any { status(it) != LevelStatus.Locked }
+                // Locked chapters stay folded unless the developer switch below is on.
+                val unlocked = DEV_OPEN_ALL_LEVELS || levels.any { status(it) != LevelStatus.Locked }
                 item(key = "ch${chapter.id}") {
                     Column(Modifier.padding(top = 16.dp, bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
@@ -145,8 +145,8 @@ private fun LevelRow(level: Level, status: LevelStatus, hardDone: Boolean, onOpe
                     .then(
                         when {
                             status == LevelStatus.Done -> Modifier.clickable(role = Role.Button, onClickLabel = "Replay") { onOpen() }
-                            // Debug builds only: open locked levels to test them without playing everything before.
-                            BuildConfig.DEBUG && status == LevelStatus.Locked -> Modifier.clickable(role = Role.Button, onClickLabel = "Open (debug)") { onOpen() }
+                            // Developer switch only: open locked levels without playing everything before.
+                            DEV_OPEN_ALL_LEVELS && status == LevelStatus.Locked -> Modifier.clickable(role = Role.Button, onClickLabel = "Open (debug)") { onOpen() }
                             else -> Modifier
                         },
                     )
@@ -179,3 +179,10 @@ fun BottomTabs(selected: String, onTab: (String) -> Unit) {
         }
     }
 }
+
+/**
+ * Developer switch: set to true to open every level (and expand every chapter) without playing the ones before.
+ * Off by default, so debug builds play like the real game: a level unlocks only after the previous one is complete.
+ * Release builds never honour it.
+ */
+private val DEV_OPEN_ALL_LEVELS = BuildConfig.DEBUG && false
